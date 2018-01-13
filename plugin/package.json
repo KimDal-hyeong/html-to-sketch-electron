@@ -1,0 +1,7 @@
+{
+  "name": "HTMLtoSketch",
+  "skpm": {
+    "manifest": "asketch2sketch/manifest.json",
+    "main": "../build/HTMLtoSketch.sketchplugin"
+  }
+}
