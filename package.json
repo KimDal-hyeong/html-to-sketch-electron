@@ -4,7 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "gulp start",
-    "build": "electron-packager . HTML-to-Sketh --platform=darwin",
+    "build": "webpack && electron-packager . --overwrite 'HTML to Sketch' --platform=darwin --arch=x64 --prune=false --icon=icon.icns --out=app-build",
     "build:script": "webpack"
   },
   "devDependencies": {
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@skpm/builder": "^0.2.0",
-    "html-sketchapp": "github:KimDal-hyeong/html-sketchapp#62606e648a7d539bde36134b9f94a0d98ab02245",
+    "html-sketchapp": "github:KimDal-hyeong/html-sketchapp#0206c7c254839f3eb12bb443cdd5ad44e3ab6817",
     "skpm": "^1.0.12"
   }
 }

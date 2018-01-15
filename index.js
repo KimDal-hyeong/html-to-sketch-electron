@@ -1,6 +1,8 @@
 const fs = require('fs');
+const path = require('path');
 
-const runPlugin = require('./src/runPlugin.js');
+const runPlugin = require('./lib/runPlugin.js');
+const electron = require('electron');
 
 const adressInput = document.getElementsByClassName('Header__input')[0];
 const webview = document.getElementsByClassName('Content__webview')[0];
@@ -8,10 +10,11 @@ const pickerBtn = document.getElementsByClassName('SideBar__pick-btn')[0];
 const runBtn = document.getElementsByClassName('SideBar__run-btn')[0];
 const alert = document.getElementsByClassName('Alert')[0];
 
+
 // 이벤트
 webview.addEventListener("dom-ready", function (e) {
-  // webview.openDevTools();
-  const script = fs.readFileSync('./build/webviewScript.bundle.js', 'utf8');
+  electron.remote.getCurrentWindow().openDevTools();
+  const script = fs.readFileSync(path.join(__dirname, './lib/webviewScript.bundle.js'), 'utf8');
   webview.executeJavaScript(script);
   stopPicker();
 });
@@ -45,7 +48,6 @@ webview.addEventListener('ipc-message', (event) => {
       break;
   }
 });
-
 
 // 함수
 function loadWebview(url) {
