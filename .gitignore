@@ -1,2 +1,5 @@
 node_modules
 .idea
+app-build
+plugin/asketch2sketch/page.asketch.json
+build/HTMLtoSketch.sketchplugin/Contents/Sketch/asketch2sketch.js
