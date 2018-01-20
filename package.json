@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@skpm/builder": "^0.2.0",
+    "generate-json-webpack-plugin": "^0.2.2",
     "html-sketchapp": "github:KimDal-hyeong/html-sketchapp#0206c7c254839f3eb12bb443cdd5ad44e3ab6817",
-    "skpm": "^1.0.12"
   }
 }

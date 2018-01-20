@@ -1,8 +1,9 @@
 import {fromSJSONDictionary} from 'sketchapp-json-plugin';
-import {fixTextLayer, fixSharedTextStyle} from './helpers/fixFont';
-import fixImageFill from './helpers/fixImageFill';
-import makeSVGLayer from './helpers/makeSVGLayer';
-import jsonContent from './page.asketch.json';
+import {fixTextLayer} from 'html-sketchapp/asketch2sketch/helpers/fixFont';
+import fixImageFill from 'html-sketchapp/asketch2sketch/helpers/fixImageFill';
+import makeSVGLayer from 'html-sketchapp/asketch2sketch/helpers/makeSVGLayer';
+
+const jsonContent = require('./page.asketch.json');
 
 function removeExistingLayers(context) {
   if (context.containsLayers()) {
@@ -37,29 +38,6 @@ function getNativeLayer(layer) {
     fixLayer(layer);
     return fromSJSONDictionary(layer);
   }
-}
-
-function removeSharedTextStyles(document) {
-  document.documentData().layerTextStyles().setObjects([]);
-}
-
-function addSharedTextStyle(document, style) {
-  const textStyles = document.documentData().layerTextStyles();
-
-  textStyles.addSharedStyleWithName_firstInstance(style.name, fromSJSONDictionary(style.value));
-}
-
-function removeSharedColors(document) {
-  const assets = document.documentData().assets();
-
-  assets.removeAllColors();
-}
-
-function addSharedColor(document, colorJSON) {
-  const assets = document.documentData().assets();
-  const color = fromSJSONDictionary(colorJSON);
-
-  assets.addColor(color);
 }
 
 export default function asketch2sketch(context) {

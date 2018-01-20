@@ -1,7 +1,7 @@
 module.exports = {
   entry: './src/webviewScript.js',
   output: {
-    filename: './lib/webviewScript.bundle.js',
+    filename: './script/webviewScript.bundle.js',
     library: 'webviewScript'
   }
 };

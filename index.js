@@ -1,8 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const runPlugin = require('./lib/runPlugin.js');
-const electron = require('electron');
+const runPlugin = require('./script/runPlugin');
 
 const adressInput = document.getElementsByClassName('Header__input')[0];
 const webview = document.getElementsByClassName('Content__webview')[0];
@@ -10,11 +9,9 @@ const pickerBtn = document.getElementsByClassName('SideBar__pick-btn')[0];
 const runBtn = document.getElementsByClassName('SideBar__run-btn')[0];
 const alert = document.getElementsByClassName('Alert')[0];
 
-
 // 이벤트
 webview.addEventListener("dom-ready", function (e) {
-  electron.remote.getCurrentWindow().openDevTools();
-  const script = fs.readFileSync(path.join(__dirname, './lib/webviewScript.bundle.js'), 'utf8');
+  const script = fs.readFileSync(path.join(__dirname, './script/webviewScript.bundle.js'), 'utf8');
   webview.executeJavaScript(script);
   stopPicker();
 });
