@@ -38,11 +38,11 @@ function pickerMouseOver(e) {
 }
 
 function pickerMouseDown(e) {
+  window.h2s_SelectedElement = nowElement;
   eventCover.style.pointerEvents = 'auto';
   guide.style.pointerEvents = 'auto';
   guide.style.background = 'rgba(0, 0, 0, 0)';
   guide.style.outline = '20000px solid rgba(0, 0, 0, 0.4)';
-  window.h2s_SelectedElement = nowElement;
   console.log(window.h2s_SelectedElement);
   document.body.removeEventListener('mouseover', pickerMouseOver);
   document.body.removeEventListener('mousedown', pickerMouseDown);
@@ -57,6 +57,7 @@ function startPicker() {
 }
 
 function stopPicker() {
+  window.h2s_SelectedElement = false;
   guide.style.left = '-9999999px';
   guide.style.outline = 0;
   guide.style.pointerEvents = 'none';
