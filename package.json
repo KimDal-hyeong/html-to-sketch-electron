@@ -10,12 +10,15 @@
     "electron": "~1.7.8",
     "electron-connect": "^0.6.3",
     "electron-packager": "^10.1.1",
-    "gulp": "^3.9.1",
-    "webpack": "^3.10.0"
+    "gulp": "^3.9.1"
   },
   "dependencies": {
     "@skpm/builder": "^0.2.0",
+    "compare-versions": "^3.1.0",
     "generate-json-webpack-plugin": "^0.2.2",
     "html-sketchapp": "github:KimDal-hyeong/html-sketchapp#0206c7c254839f3eb12bb443cdd5ad44e3ab6817",
+    "open": "0.0.5",
+    "request-promise": "^4.2.2",
+    "webpack": "^3.10.0"
   }
 }
