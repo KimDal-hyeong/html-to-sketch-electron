@@ -3,9 +3,8 @@
   "version": "0.0.1",
   "main": "main.js",
   "scripts": {
-    "start": "gulp start",
-    "build": "webpack && electron-packager . --overwrite 'HTML to Sketch' --platform=darwin --arch=x64 --prune=false --icon=icon.icns --out=app-build",
-    "build:script": "webpack"
+    "start": "webpack && gulp start",
+    "build": "webpack && node electronPackager"
   },
   "devDependencies": {
     "electron": "~1.7.8",
