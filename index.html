@@ -382,11 +382,16 @@
 </div>
 <div class="Cover"></div>
 
-<!-- build:remove -->
-<!-- Connect to server process -->
-<script>require('electron-connect').client.create()</script>
-<!-- end:build -->
 
 <script src="index.js"></script>
+
+<script>
+//  require('electron-connect').client.create();
+//  require('electron').remote.getCurrentWindow().openDevTools();
+//  ((webview) => {
+//    webview.addEventListener("dom-ready", () => {webview.openDevTools();});
+//  })(document.getElementsByClassName('Content__webview')[0]);
+</script>
+
 </body>
 </html>
