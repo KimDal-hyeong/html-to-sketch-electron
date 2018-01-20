@@ -77,7 +77,7 @@ function pseudoToElement() {
     }
   });
 
-  // value and placement to element
+  // value and placeholder in inputs to element
   function selectorsToElements(selectors) {
     let elements = [];
     selectors.forEach(function (selector) {
@@ -123,7 +123,7 @@ export async function run() {
   });
 
   page.setName(document.title);
-
+  
   if (!window.h2s_SelectedElement) {
     window.h2s_SelectedElement = document.body;
   }
