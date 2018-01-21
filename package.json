@@ -18,6 +18,7 @@
     "generate-json-webpack-plugin": "^0.2.2",
     "html-sketchapp": "github:KimDal-hyeong/html-sketchapp#20a6a0233ec56627dc559ce02d2e76ebee539649",
     "open": "0.0.5",
+    "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "webpack": "^3.10.0"
   }
