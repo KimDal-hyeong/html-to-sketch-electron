@@ -317,7 +317,7 @@ async function imgToSvg() {
     const src = elm.src;
 
     if (src.indexOf('.svg') !== -1) {
-      const svgString = await toTextCotent(src).catch(e => {
+      const svgString = await toTextCotent(src + '?cache').catch(e => {
         console.error(e);
       });
       const elementStyle = getComputedStyle(elm);
