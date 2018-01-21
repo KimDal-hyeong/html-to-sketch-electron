@@ -43,7 +43,6 @@ function pickerMouseDown(e) {
   guide.style.pointerEvents = 'auto';
   guide.style.background = 'rgba(0, 0, 0, 0)';
   guide.style.outline = '20000px solid rgba(0, 0, 0, 0.4)';
-  console.log(window.h2s_SelectedElement);
   document.body.removeEventListener('mouseover', pickerMouseOver);
   document.body.removeEventListener('mousedown', pickerMouseDown);
   ipcRenderer.sendToHost('picker-picked');
