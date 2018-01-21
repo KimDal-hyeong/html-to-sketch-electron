@@ -11,6 +11,7 @@ const alert = document.getElementsByClassName('Alert')[0];
 
 // 이벤트
 webview.addEventListener("dom-ready", function (e) {
+  adressInput.value = '';
   const script = fs.readFileSync(path.join(__dirname, './script/webviewScript.bundle.js'), 'utf8');
   webview.executeJavaScript(script);
   stopPicker();
