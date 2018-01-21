@@ -1140,7 +1140,7 @@ async function nodeToSketchLayers(node) {
 
   // Skip node when display is set to none for itself or an ancestor
   // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetParent
-  if (node.offsetParent === null && position !== 'fixed') {
+  if (node.offsetParent === null && position !== 'fixed' && node.nodeName !== 'BODY' || display === 'none') {
     return layers;
   }
 
