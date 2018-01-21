@@ -56,7 +56,8 @@ function loadWebview(url) {
 function runSketch() {
   alert.classList.add('Alert--loading');
   webview.executeJavaScript('webviewScript.runPage2layers()', false, function (result) {
-    runPlugin(JSON.stringify(result), function () {
+    const jsonString = JSON.stringify(result).replace(/sans-serif/g, 'Arial');
+    runPlugin(jsonString, function () {
       alert.classList.remove('Alert--loading');
       alert.classList.add('Alert--done');
       setTimeout(function () {
