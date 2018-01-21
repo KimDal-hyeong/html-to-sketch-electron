@@ -157,6 +157,8 @@
   function openBrowser(url) {
     ipcRenderer.sendToHost('open-browser', url);
   }
+
+  ipcRenderer.sendToHost('reset-address-input');
 </script>
 </body>
 </html>

@@ -12,10 +12,6 @@ const alert = document.getElementsByClassName('Alert')[0];
 
 // 이벤트
 webview.addEventListener("dom-ready", function (e) {
-  if (!window.h2s_IsFirstLoad) {
-    adressInput.value = '';
-    window.h2s_IsFirstLoad = true;
-  }
   const script = fs.readFileSync(path.join(__dirname, './script/webviewScript.bundle.js'), 'utf8');
   webview.executeJavaScript(script);
   stopPicker();
@@ -50,6 +46,9 @@ webview.addEventListener('ipc-message', (event) => {
       break;
     case 'open-browser':
       open(event.args[0]);
+      break;
+    case 'reset-address-input':
+      adressInput.value = '';
       break;
   }
 });
