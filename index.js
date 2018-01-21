@@ -12,7 +12,10 @@ const alert = document.getElementsByClassName('Alert')[0];
 
 // 이벤트
 webview.addEventListener("dom-ready", function (e) {
-  adressInput.value = '';
+  if (!window.h2s_IsFirstLoad) {
+    adressInput.value = '';
+    window.h2s_IsFirstLoad = true;
+  }
   const script = fs.readFileSync(path.join(__dirname, './script/webviewScript.bundle.js'), 'utf8');
   webview.executeJavaScript(script);
   stopPicker();
