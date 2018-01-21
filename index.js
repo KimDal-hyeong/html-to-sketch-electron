@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const open = require("open");
 
 const runPlugin = require('./script/runPlugin');
 
@@ -43,6 +44,9 @@ webview.addEventListener('ipc-message', (event) => {
     case 'window-resize':
     case 'window-scroll':
       stopPicker();
+      break;
+    case 'open-browser':
+      open(event.args[0]);
       break;
   }
 });

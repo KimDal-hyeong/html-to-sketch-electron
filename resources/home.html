@@ -62,7 +62,14 @@
       line-height: 1.8;
     }
 
-    a:hover {
+    button {
+      background: none;
+      border: 0;
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    button:hover {
       color: #fff;
     }
   </style>
@@ -140,8 +147,16 @@
 <footer>
   <p>
     © 2018 KimDal-hyeong<br>
-    <a href="https://github.com/KimDal-hyeong/html-to-sketch-electron">https://github.com/KimDal-hyeong/html-to-sketch-electron</a>
+    <button type="button" onclick="openBrowser('https://github.com/KimDal-hyeong/html-to-sketch-electron')">https://github.com/KimDal-hyeong/html-to-sketch-electron</button>
   </p>
 </footer>
+
+<script>
+  const { ipcRenderer } = window.require('electron');
+
+  function openBrowser(url) {
+    ipcRenderer.sendToHost('open-browser', url);
+  }
+</script>
 </body>
 </html>
