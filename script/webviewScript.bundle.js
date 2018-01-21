@@ -1277,7 +1277,7 @@ async function nodeToSketchLayers(node) {
     fontSize: parseInt(fontSize, 10),
     lineHeight: lineHeight !== 'normal' ? parseInt(lineHeight, 10) : undefined,
     letterSpacing: letterSpacing !== 'normal' ? parseFloat(letterSpacing) : undefined,
-    fontWeight: parseInt(fontWeight, 10),
+    fontWeight,
     color,
     textTransform,
     textDecoration: textDecorationStyle,
