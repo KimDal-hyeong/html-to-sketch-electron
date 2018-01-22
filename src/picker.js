@@ -1,5 +1,3 @@
-const { ipcRenderer } = window.require('electron');
-
 const guide = document.createElement('div');
 guide.style.position = 'fixed';
 guide.style.border = '1px solid #3880ff';
@@ -20,12 +18,16 @@ document.body.appendChild(eventCover);
 
 let nowElement;
 
+function sendToHost(...args) {
+  process.atomBinding('ipc').send('ipc-message-host', args);
+}
+
 function windowResizeInPicked() {
-  ipcRenderer.sendToHost('window-resize');
+  sendToHost('window-resize');
 }
 
 function windowScrollInPicked() {
-  ipcRenderer.sendToHost('window-scroll');
+  sendToHost('window-scroll');
 }
 
 function pickerMouseOver(e) {
@@ -45,7 +47,7 @@ function pickerMouseDown(e) {
   guide.style.outline = '20000px solid rgba(0, 0, 0, 0.4)';
   document.body.removeEventListener('mouseover', pickerMouseOver);
   document.body.removeEventListener('mousedown', pickerMouseDown);
-  ipcRenderer.sendToHost('picker-picked');
+  sendToHost('picker-picked');
   window.addEventListener('resize', windowResizeInPicked);
   window.addEventListener('scroll', windowScrollInPicked);
 }
