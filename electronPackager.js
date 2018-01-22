@@ -16,6 +16,8 @@ const options = {
     'package-lock.json',
     'webpack.config.js',
     'yarn.lock',
+    'README.md',
+    /.*\.gif/,
   ]
 };
 
