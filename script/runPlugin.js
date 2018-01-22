@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const generateWebpackConfig = require('@skpm/builder/lib/utils/webpackConfig').default;
@@ -36,10 +35,6 @@ const manifestJsonPlugin = new generateJsonPlugin('manifest.json', {
 });
 
 async function runPlugin (json, callback) {
-
-  const asketchJsonPath = path.resolve(__dirname, '../plugin/page.asketch.json');
-  fs.writeFileSync(asketchJsonPath, json);
-
   const webpackConfigRun = await webpackConfig(file, identifiers, handlers);
 
   // context 수정
@@ -49,6 +44,9 @@ async function runPlugin (json, callback) {
   // manifest.json 을 만드는 플러그인 추가
   webpackConfigRun.plugins.push(manifestJsonPlugin);
 
+  // json 스트링을 플러그인으로 전달
+  webpackConfigRun.plugins.push(new webpack.DefinePlugin({"jsonContentString": JSON.stringify(json)}));
+
   const compiler = webpack(webpackConfigRun);
 
   compiler.run((err, stat)=>{
@@ -56,7 +54,6 @@ async function runPlugin (json, callback) {
       console.log(err);
       console.log(stat);
     }
-    fs.unlinkSync(asketchJsonPath);
     callback();
   });
 }

@@ -3,8 +3,6 @@ import {fixTextLayer} from 'html-sketchapp/asketch2sketch/helpers/fixFont';
 import fixImageFill from 'html-sketchapp/asketch2sketch/helpers/fixImageFill';
 import makeSVGLayer from 'html-sketchapp/asketch2sketch/helpers/makeSVGLayer';
 
-const jsonContent = require('./page.asketch.json');
-
 function removeExistingLayers(context) {
   if (context.containsLayers()) {
     const loop = context.children().objectEnumerator();
@@ -43,6 +41,8 @@ function getNativeLayer(layer) {
 export default function asketch2sketch(context) {
   const document = context.document;
   const page = document.currentPage();
+
+  const jsonContent = JSON.parse(jsonContentString);
 
   removeExistingLayers(page);
 
