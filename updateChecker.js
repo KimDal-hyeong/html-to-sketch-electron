@@ -3,12 +3,12 @@ const compareVersions = require('compare-versions');
 const open = require("open");
 const {app, dialog} = require('electron');
 
-const downloadLinksUrl = 'https://raw.githubusercontent.com/KimDal-hyeong/html-to-sketch-electron/master/downloadLinks.json';
+const downloadLinksUrl = 'https://raw.githubusercontent.com/KimDal-hyeong/html-to-sketch-electron/master/downloadLink.json';
 
 module.exports =  async function() {
   const updatesJson = JSON.parse(await requestPromise(downloadLinksUrl));
 
-  if (compareVersions(updatesJson.links[0].version, app.getVersion()) === 1) {
+  if (compareVersions(updatesJson.version, app.getVersion()) === 1) {
     const dialogOpts = {
       type: 'info',
       title: 'New version',
@@ -19,7 +19,7 @@ module.exports =  async function() {
 
     dialog.showMessageBox(dialogOpts, (response) => {
       if(response === 0) {
-        open(updatesJson.links[0].link);
+        open(updatesJson.link);
       }
     })
   }
