@@ -8,7 +8,7 @@ const options = {
   platform: 'darwin',
   arch: 'x64',
   overwrite: true,
-  prune: true,
+  prune: false,
   ignore: [
     '.gitignore',
     'electronPackager.js',
