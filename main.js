@@ -1,7 +1,6 @@
+const {app, Menu, dialog} = require('electron');
 const electron = require('electron');
 
-// Module to control application life.
-const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
@@ -35,7 +34,28 @@ function createWindow () {
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
-  })
+  });
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: app.getName(),
+      submenu: [
+        {
+          label: 'about',
+          click: function () {
+            dialog.showMessageBox({
+              type: 'info',
+              title: 'HTML to Sketch',
+              buttons: ['close'],
+              message: 'HTML to Sketch ' + app.getVersion(),
+              detail: 'commit : ' + process.env.COMMIT_REVISION
+            })
+          }
+        }
+      ]
+    }
+  ]);
+  Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished
@@ -55,4 +75,3 @@ app.on('activate', function () {
     createWindow();
   }
 });
-

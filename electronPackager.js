@@ -21,6 +21,11 @@ const options = {
   ]
 };
 
+const commitRevision = require('child_process')
+  .execSync('git rev-parse HEAD')
+  .toString().trim();
+process.env.COMMIT_REVISION = commitRevision;
+
 packager(options)
   .then((appPaths) => {
     console.log('Build Complete : ' + appPaths)
