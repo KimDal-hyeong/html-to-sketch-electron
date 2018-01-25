@@ -1,7 +1,7 @@
 {
   "name": "html-to-sektch-electron",
-  "version": "0.0.1",
   "main": "main.js",
+  "versionPrefix": "0.0.1",
   "scripts": {
     "start": "webpack && gulp start",
     "build": "webpack && node electronPackager"

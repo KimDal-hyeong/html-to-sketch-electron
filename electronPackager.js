@@ -1,4 +1,13 @@
+const fs = require('fs');
 const packager = require('electron-packager');
+const appVersionPrefix = require('./package.json').versionPrefix;
+
+const execSync = require('child_process').execSync;
+
+const commitHash = execSync('git rev-parse HEAD').toString().trim();
+const commitCount = execSync('git rev-list HEAD --count').toString().trim();
+
+process.env.COMMIT_HASH = commitHash;
 
 const options = {
   dir: '.',
@@ -9,6 +18,7 @@ const options = {
   arch: 'x64',
   overwrite: true,
   prune: false,
+  appVersion: appVersionPrefix + '.' + commitCount,
   ignore: [
     '.gitignore',
     'electronPackager.js',
@@ -21,10 +31,7 @@ const options = {
   ]
 };
 
-const commitRevision = require('child_process')
-  .execSync('git rev-parse HEAD')
-  .toString().trim();
-process.env.COMMIT_REVISION = commitRevision;
+fs.writeFileSync('commitHash.json', JSON.stringify({commitHash}, null, 2));
 
 packager(options)
   .then((appPaths) => {

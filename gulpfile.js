@@ -1,12 +1,12 @@
+const fs = require('fs');
 const gulp = require('gulp');
 const electron = require('electron-connect').server.create();
+const execSync = require('child_process').execSync;
 
 gulp.task('start', function () {
 
-  const commitRevision = require('child_process')
-    .execSync('git rev-parse HEAD')
-    .toString().trim();
-  process.env.COMMIT_REVISION = commitRevision;
+  const commitHash = execSync('git rev-parse HEAD').toString().trim();
+  fs.writeFileSync('commitHash.json', JSON.stringify({commitHash}, null, 2));
 
   // Start browser process
   electron.start();

@@ -10,6 +10,9 @@ const url = require('url');
 const updateChecker = require('./updateChecker.js');
 updateChecker();
 
+const commitHash = require('./commitHash.json').commitHash;
+
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -48,7 +51,7 @@ function createWindow () {
               title: 'HTML to Sketch',
               buttons: ['close'],
               message: 'HTML to Sketch ' + app.getVersion(),
-              detail: 'commit : ' + process.env.COMMIT_REVISION
+              detail: 'commit : ' + commitHash + '\n\nhttps://github.com/KimDal-hyeong/html-to-sketch-electron'
             })
           }
         }
