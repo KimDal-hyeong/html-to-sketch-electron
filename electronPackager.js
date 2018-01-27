@@ -35,5 +35,6 @@ fs.writeFileSync('commitHash.json', JSON.stringify({commitHash}, null, 2));
 
 packager(options)
   .then((appPaths) => {
-    console.log('Build Complete : ' + appPaths)
+    console.log('Build Complete : ' + appPaths);
+    fs.unlinkSync('commitHash.json');
   });
