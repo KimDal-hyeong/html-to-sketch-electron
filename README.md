@@ -1,6 +1,6 @@
 # html-to-sketch-electron
 
-**Download APP :** [DOWNLOAD](https://goo.gl/u1QWkT)
+**Download APP :** [DOWNLOAD](https://goo.gl/2LKFjN)
 
 You can easily convert html to sketch layer.  
 This project is based on the [html-sketchapp](https://github.com/brainly/html-sketchapp) project.
