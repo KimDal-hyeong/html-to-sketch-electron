@@ -47,8 +47,6 @@ async function runPlugin (json, callback) {
   // json 스트링을 플러그인으로 전달
   webpackConfigRun.plugins.push(new webpack.DefinePlugin({"jsonContentString": JSON.stringify(json)}));
 
-  require('fs').writeFileSync(__dirname + 'json.json', JSON.stringify(webpackConfigRun, 2));
-
   const compiler = webpack(webpackConfigRun);
 
   compiler.run((err, stat) => {

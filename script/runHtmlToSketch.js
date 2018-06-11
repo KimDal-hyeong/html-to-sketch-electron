@@ -1,4 +1,3 @@
-const fs = require('fs');
 const {webview, alert} = require(__dirname + '/getElements');
 const runPlugin = require(__dirname + '/runPlugin');
 const {replaceFont} = require(__dirname + '/fontReplacer');
