@@ -5353,7 +5353,6 @@ exports['default'] = function () {
       var backgroundImageResult = parseBackgroundImage(backgroundImage);
       if (backgroundImageResult && backgroundImageResult.type === 'Image') {
         var imageUrl = await fixBackgroundImage(backgroundImageResult.value, width, height, backgroundSize, backgroundPosition, backgroundRepeat);
-        console.log(imageUrl);
         node.style.backgroundImage = 'url("' + String(imageUrl) + '")';
       }
     }));
