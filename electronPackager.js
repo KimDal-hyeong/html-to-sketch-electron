@@ -1,11 +1,10 @@
 const fs = require('fs');
 const packager = require('electron-packager');
-const appVersionPrefix = require('./package.json').versionPrefix;
+const appVersion = require('./package.json').version;
 
 const execSync = require('child_process').execSync;
 
 const commitHash = execSync('git rev-parse HEAD').toString().trim();
-const commitCount = execSync('git rev-list HEAD --count').toString().trim();
 
 process.env.COMMIT_HASH = commitHash;
 
@@ -18,7 +17,7 @@ const options = {
   arch: 'x64',
   overwrite: true,
   prune: false,
-  appVersion: appVersionPrefix + '.' + commitCount,
+  appVersion: appVersion,
   ignore: [
     '.gitignore',
     'electronPackager.js',
