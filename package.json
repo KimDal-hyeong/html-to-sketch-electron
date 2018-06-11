@@ -15,7 +15,7 @@
     "gulp": "^3.9.1"
   },
   "dependencies": {
-    "@brainly/html-sketchapp": "^3.2.0",
+    "@brainly/html-sketchapp": "github:KimDal-hyeong/html-sketchapp#fc16ac910ce8f3008f4bbc794c9a3675095dc9de",
     "@skpm/builder": "^0.4.2",
     "compare-versions": "^3.1.0",
     "font-manager": "^0.3.0",

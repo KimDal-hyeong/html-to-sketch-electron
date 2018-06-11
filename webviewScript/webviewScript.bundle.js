@@ -269,121 +269,149 @@ function generateID() {
   return e7();
 }
 
-var safeToLower = function safeToLower(input) {
-  if (typeof input === 'string') {
-    return input.toLowerCase();
-  }
-
-  return input;
-};
-
-// Takes colors as CSS hex, name, rgb, rgba, hsl or hsla
-var makeColorFromCSS = exports.makeColorFromCSS = function makeColorFromCSS(input) {
-  var alpha = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-
-  var nullableColor = (0, _normalizeCssColor2['default'])(safeToLower(input));
-  var colorInt = nullableColor === null ? 0x00000000 : nullableColor;
-
-  var _normalizeColor$rgba = _normalizeCssColor2['default'].rgba(colorInt),
-      r = _normalizeColor$rgba.r,
-      g = _normalizeColor$rgba.g,
-      b = _normalizeColor$rgba.b,
-      a = _normalizeColor$rgba.a;
-
-  return {
-    _class: 'color',
-    red: r / 255,
-    green: g / 255,
-    blue: b / 255,
-    alpha: a * alpha
-  };
-};
-
-// Solid color fill
-var makeColorFill = exports.makeColorFill = function makeColorFill(cssColor, alpha) {
-  return {
-    _class: 'fill',
-    isEnabled: true,
-    color: makeColorFromCSS(cssColor, alpha),
-    fillType: 0,
-    noiseIndex: 0,
-    noiseIntensity: 0,
-    patternFillType: 1,
-    patternTileScale: 1
-  };
-};
-
-var ensureBase64DataURL = function ensureBase64DataURL(url) {
-  var imageData = url.match(/data:(.+?)(;(.+))?,(.+)/i);
-
-  if (imageData && imageData[3] !== 'base64') {
-    // Solve for an NSURL bug that can't handle plaintext data: URLs
-    var type = imageData[1];
-    var data = decodeURIComponent(imageData[4]);
-    var encodingMatch = imageData[3] && imageData[3].match(/^charset=(.*)/);
-    var buffer = void 0;
-
-    if (encodingMatch) {
-      buffer = Buffer.from(data, encodingMatch[1]);
-    } else {
-      buffer = Buffer.from(data);
+var safeToLower = function () {
+  function safeToLower(input) {
+    if (typeof input === 'string') {
+      return input.toLowerCase();
     }
 
-    return 'data:' + String(type) + ';base64,' + String(buffer.toString('base64'));
+    return input;
   }
 
-  return url;
-};
+  return safeToLower;
+}();
+
+// Takes colors as CSS hex, name, rgb, rgba, hsl or hsla
+var makeColorFromCSS = exports.makeColorFromCSS = function () {
+  function makeColorFromCSS(input) {
+    var alpha = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
+    var nullableColor = (0, _normalizeCssColor2['default'])(safeToLower(input));
+    var colorInt = nullableColor === null ? 0x00000000 : nullableColor;
+
+    var _normalizeColor$rgba = _normalizeCssColor2['default'].rgba(colorInt),
+        r = _normalizeColor$rgba.r,
+        g = _normalizeColor$rgba.g,
+        b = _normalizeColor$rgba.b,
+        a = _normalizeColor$rgba.a;
+
+    return {
+      _class: 'color',
+      red: r / 255,
+      green: g / 255,
+      blue: b / 255,
+      alpha: a * alpha
+    };
+  }
+
+  return makeColorFromCSS;
+}();
+
+// Solid color fill
+var makeColorFill = exports.makeColorFill = function () {
+  function makeColorFill(cssColor, alpha) {
+    return {
+      _class: 'fill',
+      isEnabled: true,
+      color: makeColorFromCSS(cssColor, alpha),
+      fillType: 0,
+      noiseIndex: 0,
+      noiseIntensity: 0,
+      patternFillType: 1,
+      patternTileScale: 1
+    };
+  }
+
+  return makeColorFill;
+}();
+
+var ensureBase64DataURL = function () {
+  function ensureBase64DataURL(url) {
+    var imageData = url.match(/data:(.+?)(;(.+))?,(.+)/i);
+
+    if (imageData && imageData[3] !== 'base64') {
+      // Solve for an NSURL bug that can't handle plaintext data: URLs
+      var type = imageData[1];
+      var data = decodeURIComponent(imageData[4]);
+      var encodingMatch = imageData[3] && imageData[3].match(/^charset=(.*)/);
+      var buffer = void 0;
+
+      if (encodingMatch) {
+        buffer = Buffer.from(data, encodingMatch[1]);
+      } else {
+        buffer = Buffer.from(data);
+      }
+
+      return 'data:' + String(type) + ';base64,' + String(buffer.toString('base64'));
+    }
+
+    return url;
+  }
+
+  return ensureBase64DataURL;
+}();
 
 // patternFillType - 0 1 2 3
-var makeImageFill = exports.makeImageFill = function makeImageFill(url) {
-  var patternFillType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-  return {
-    _class: 'fill',
-    isEnabled: true,
-    fillType: _sketchConstants.FillType.Pattern,
-    image: {
-      _class: 'MSJSONOriginalDataReference',
-      _ref_class: 'MSImageData',
-      _ref: 'images/' + String(generateID()),
-      url: url.indexOf('data:') === 0 ? ensureBase64DataURL(url) : url
-    },
-    noiseIndex: 0,
-    noiseIntensity: 0,
-    patternFillType: patternFillType,
-    patternTileScale: 1
-  };
-};
-
-var containsAllItems = function containsAllItems(needles, haystack) {
-  return needles.every(function (needle) {
-    return haystack.includes(needle);
-  });
-};
-
-var calculateResizingConstraintValue = exports.calculateResizingConstraintValue = function calculateResizingConstraintValue() {
-  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
+var makeImageFill = exports.makeImageFill = function () {
+  function makeImageFill(url) {
+    var patternFillType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+    return {
+      _class: 'fill',
+      isEnabled: true,
+      fillType: _sketchConstants.FillType.Pattern,
+      image: {
+        _class: 'MSJSONOriginalDataReference',
+        _ref_class: 'MSImageData',
+        _ref: 'images/' + String(generateID()),
+        url: url.indexOf('data:') === 0 ? ensureBase64DataURL(url) : url
+      },
+      noiseIndex: 0,
+      noiseIntensity: 0,
+      patternFillType: patternFillType,
+      patternTileScale: 1
+    };
   }
 
-  var noHeight = [RESIZING_CONSTRAINTS.TOP, RESIZING_CONSTRAINTS.BOTTOM, RESIZING_CONSTRAINTS.HEIGHT];
-  var noWidth = [RESIZING_CONSTRAINTS.LEFT, RESIZING_CONSTRAINTS.RIGHT, RESIZING_CONSTRAINTS.WIDTH];
-  var validValues = Object.values(RESIZING_CONSTRAINTS);
+  return makeImageFill;
+}();
 
-  if (!args.every(function (arg) {
-    return validValues.includes(arg);
-  })) {
-    throw new Error('Unknown resizing constraint');
-  } else if (containsAllItems(noHeight, args)) {
-    throw new Error('Can\'t fix height when top & bottom are fixed');
-  } else if (containsAllItems(noWidth, args)) {
-    throw new Error('Can\'t fix width when left & right are fixed');
+var containsAllItems = function () {
+  function containsAllItems(needles, haystack) {
+    return needles.every(function (needle) {
+      return haystack.includes(needle);
+    });
   }
 
-  return args.length > 0 ? args.reduce(function (acc, item) {
-    return acc & item;
-  }, args[0]) : RESIZING_CONSTRAINTS.NONE;
-};
+  return containsAllItems;
+}();
+
+var calculateResizingConstraintValue = exports.calculateResizingConstraintValue = function () {
+  function calculateResizingConstraintValue() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    var noHeight = [RESIZING_CONSTRAINTS.TOP, RESIZING_CONSTRAINTS.BOTTOM, RESIZING_CONSTRAINTS.HEIGHT];
+    var noWidth = [RESIZING_CONSTRAINTS.LEFT, RESIZING_CONSTRAINTS.RIGHT, RESIZING_CONSTRAINTS.WIDTH];
+    var validValues = Object.values(RESIZING_CONSTRAINTS);
+
+    if (!args.every(function (arg) {
+      return validValues.includes(arg);
+    })) {
+      throw new Error('Unknown resizing constraint');
+    } else if (containsAllItems(noHeight, args)) {
+      throw new Error('Can\'t fix height when top & bottom are fixed');
+    } else if (containsAllItems(noWidth, args)) {
+      throw new Error('Can\'t fix width when left & right are fixed');
+    }
+
+    return args.length > 0 ? args.reduce(function (acc, item) {
+      return acc & item;
+    }, args[0]) : RESIZING_CONSTRAINTS.NONE;
+  }
+
+  return calculateResizingConstraintValue;
+}();
 
 var RESIZING_CONSTRAINTS = exports.RESIZING_CONSTRAINTS = {
   TOP: 31,
@@ -4126,6 +4154,7 @@ function nodeToSketchLayers(node, options) {
 
     if (boxShadow !== DEFAULT_VALUES.boxShadow) {
       var shadowObjects = shadowStringToObjects(boxShadow);
+
       shadowObjects.forEach(function (shadowObject) {
         if (boxShadow.indexOf('inset') !== -1) {
           if (borderWidth.indexOf(' ') === -1) {
@@ -4804,32 +4833,36 @@ Object.defineProperty(exports, "__esModule", {
 // ---
 // These functions should be pure to make it easy
 // to write test cases in the future.
-var parseBackgroundImage = function parseBackgroundImage(value) {
-  if (value === 'none') {
-    return;
-  }
+var parseBackgroundImage = function () {
+  function parseBackgroundImage(value) {
+    if (value === 'none') {
+      return;
+    }
 
-  var urlMatches = value.match(/^url\("(.+)"\)$/i);
-  var linearGradientMatches = value.match(/^linear-gradient\((.+)\)$/i);
+    var urlMatches = value.match(/^url\("(.+)"\)$/i);
+    var linearGradientMatches = value.match(/^linear-gradient\((.+)\)$/i);
 
-  if (urlMatches && urlMatches.length === 2) {
-    // Image
-    return {
-      type: 'Image',
-      value: urlMatches[1]
-    };
-  } else if (linearGradientMatches && linearGradientMatches.length === 2) {
-    // Linear gradient
-    var linearGradientConfig = parseLinearGradient(linearGradientMatches[1]);
-
-    if (linearGradientConfig) {
+    if (urlMatches && urlMatches.length === 2) {
+      // Image
       return {
-        type: 'LinearGradient',
-        value: linearGradientConfig
+        type: 'Image',
+        value: urlMatches[1]
       };
+    } else if (linearGradientMatches && linearGradientMatches.length === 2) {
+      // Linear gradient
+      var linearGradientConfig = parseLinearGradient(linearGradientMatches[1]);
+
+      if (linearGradientConfig) {
+        return {
+          type: 'LinearGradient',
+          value: linearGradientConfig
+        };
+      }
     }
   }
-};
+
+  return parseBackgroundImage;
+}();
 
 // Parser for a linear gradient:
 // ---
@@ -4843,56 +4876,60 @@ var parseBackgroundImage = function parseBackgroundImage(value) {
 // Source: https://www.w3.org/TR/css3-images/#linear-gradients
 // ---
 // Example: "to top, rgba(67, 90, 111, 0.04), white"
-var parseLinearGradient = function parseLinearGradient(value) {
-  var parts = [];
-  var currentPart = [];
-  var i = 0;
-  var skipComma = false;
+var parseLinearGradient = function () {
+  function parseLinearGradient(value) {
+    var parts = [];
+    var currentPart = [];
+    var i = 0;
+    var skipComma = false;
 
-  // There can be commas in colors, carefully break apart the value
-  while (i < value.length) {
-    var char = value.substr(i, 1);
+    // There can be commas in colors, carefully break apart the value
+    while (i < value.length) {
+      var char = value.substr(i, 1);
 
-    if (char === '(') {
-      skipComma = true;
-    } else if (char === ')') {
-      skipComma = false;
+      if (char === '(') {
+        skipComma = true;
+      } else if (char === ')') {
+        skipComma = false;
+      }
+
+      if (char === ',' && !skipComma) {
+        parts.push(currentPart.join('').trim());
+        currentPart = [];
+      } else {
+        currentPart.push(char);
+      }
+
+      if (i === value.length - 1) {
+        parts.push(currentPart.join('').trim());
+      }
+      i++;
     }
 
-    if (char === ',' && !skipComma) {
-      parts.push(currentPart.join('').trim());
-      currentPart = [];
-    } else {
-      currentPart.push(char);
+    if (parts.length === 2) {
+      // Assume 2 color stops
+      return {
+        angle: '180deg',
+        stops: [parts[0], parts[1]]
+      };
+    } else if (parts.length > 2) {
+      // angle + n stops
+      var angle = parts[0],
+          stops = parts.slice(1);
+
+
+      return {
+        angle: angle,
+        stops: stops
+      };
     }
 
-    if (i === value.length - 1) {
-      parts.push(currentPart.join('').trim());
-    }
-    i++;
+    // Syntax is wrong
+    return null;
   }
 
-  if (parts.length === 2) {
-    // Assume 2 color stops
-    return {
-      angle: '180deg',
-      stops: [parts[0], parts[1]]
-    };
-  } else if (parts.length > 2) {
-    // angle + n stops
-    var angle = parts[0],
-        stops = parts.slice(1);
-
-
-    return {
-      angle: angle,
-      stops: stops
-    };
-  }
-
-  // Syntax is wrong
-  return null;
-};
+  return parseLinearGradient;
+}();
 
 exports.parseBackgroundImage = parseBackgroundImage;
 
