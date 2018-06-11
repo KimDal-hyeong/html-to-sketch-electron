@@ -22,6 +22,7 @@ const options = {
   ignore: [
     '.gitignore',
     'electronPackager.js',
+    'downloadLink.json',
     'gulpfile.js',
     'package-lock.json',
     'yarn.lock',
