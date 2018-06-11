@@ -49,7 +49,7 @@ async function runPlugin (json, callback) {
 
   const compiler = webpack(webpackConfigRun);
 
-  compiler.run((err, stat)=>{
+  compiler.run((err, stat) => {
     if(err) {
       console.log(err);
       console.log(stat);
@@ -59,4 +59,3 @@ async function runPlugin (json, callback) {
 }
 
 module.exports = runPlugin;
-

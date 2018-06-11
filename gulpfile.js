@@ -12,8 +12,8 @@ gulp.task('start', function () {
   electron.start();
 
   // Restart browser process
-  gulp.watch('app.js', electron.restart);
+  gulp.watch(['main.js', 'webviewScript/*'], electron.restart);
 
   // Reload renderer process
-  gulp.watch(['index.html', 'src/*'], electron.reload);
+  gulp.watch(['index.html', 'script/*'], electron.reload);
 });

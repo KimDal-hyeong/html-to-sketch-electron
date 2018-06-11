@@ -15,6 +15,10 @@
       height: 100%;
     }
 
+    ul, ol {
+      list-style: none;
+    }
+
     /* 헤더 */
     .Header {
       position: fixed;
@@ -303,6 +307,38 @@
       border-image-slice: 1;
     }
 
+    .Option {
+      padding: 24px 0;
+    }
+
+    .Option__font-label {
+      font-size: 14px;
+      margin-bottom: 4px;
+      padding: 0 4px;
+    }
+
+    .Option__font-selector {
+      width: 100%;
+      margin-bottom: 12px;
+      outline: none;
+      height: 28px;
+      font-size: 13px;
+      padding: 0 18px;
+      border-radius: 3px;
+      cursor: pointer;
+      background-color: #fdfdfd;
+      border: 1px solid #dfdfdf;
+      box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .Option__font-selector:hover {
+      border: 1px solid #cfcfcf;
+    }
+
+    .Option__font-selector:invalid {
+      color: #565656;
+    }
+
   </style>
 </head>
 <body>
@@ -330,7 +366,7 @@
   </div>
 </div>
 <div class="SideBar">
-  <button class="SideBar__pick-btn" onclick="startPicker()">
+  <button class="SideBar__pick-btn">
     <span class="SideBar__pick-btn-content--pick-mode">
       <svg class="SideBar__pick-btn-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="14" viewBox="0 0 13 14">
         <path fill="#424242" d="M156.110047,679.676772 L158.876142,682.442868 L157.729672,683.589338 L154.982756,680.842422 L152.996359,683.521516 L150.724747,675.308762 L158.9375,677.580375 L156.110047,679.676772 Z M158.145409,675.496069 L156.822266,675.496069 L156.822266,672.133511 C156.822266,672.011719 156.723534,671.912987 156.601742,671.912987 L147.549495,671.912987 C147.427703,671.912987 147.328971,672.011719 147.328971,672.133511 L147.328971,681.185758 C147.328971,681.30755 147.427703,681.406282 147.549495,681.406282 L150.949041,681.406282 L150.949041,682.729425 L147.549495,682.729425 C146.696951,682.729425 146.005828,682.038302 146.005828,681.185758 L146.005828,672.133511 C146.005828,671.280967 146.696951,670.589844 147.549495,670.589844 L156.601742,670.589844 C157.454286,670.589844 158.145409,671.280967 158.145409,672.133511 L158.145409,675.496069 Z" transform="translate(-146 -670)"/>
@@ -341,7 +377,7 @@
       Cancel
     </span>
   </button>
-  <button class="SideBar__run-btn" type="button" onclick="runSketch()">
+  <button class="SideBar__run-btn" type="button">
     <svg class="SideBar__run-btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14">
       <g fill="none" stroke="#2E2E2E" stroke-linecap="round" stroke-linejoin="round" stroke-width=".9" transform="translate(.554 1.021)">
         <polygon points="2.994 .406 6.862 0 10.73 .406 13.725 4.393 6.862 12.32 0 4.393"/>
@@ -363,10 +399,16 @@
       Draw
     </span>
   </button>
+  <ul class="Option"></ul>
 </div>
 
 <div class="Content">
-  <webview src="./resources/home.html" class="Content__webview" style="width: 100%; height: 100%;" nodeintegration></webview>
+  <webview
+    src="./resources/home.html"
+    class="Content__webview"
+    style="width: 100%; height: 100%;"
+    preload="./webviewScript/preload.js"
+  ></webview>
 </div>
 
 <div class="Alert">
@@ -383,14 +425,13 @@
 <div class="Cover"></div>
 
 
-<script src="index.js"></script>
+<script src="script/index.js"></script>
 
 <script>
-//  require('electron-connect').client.create();
-//  require('electron').remote.getCurrentWindow().openDevTools();
-//  ((webview) => {
-//    webview.addEventListener("dom-ready", () => {webview.openDevTools();});
-//  })(document.getElementsByClassName('Content__webview')[0]);
+  if(process.env.NODE_ENV === 'dev') {
+    const webview = document.getElementsByClassName('Content__webview')[0];
+    webview.addEventListener("dom-ready", () => {webview.openDevTools();});
+  }
 </script>
 
 </body>

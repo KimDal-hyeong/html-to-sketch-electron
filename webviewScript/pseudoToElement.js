@@ -1,45 +1,4 @@
-import Page from 'html-sketchapp/html2asketch/page';
-import nodeToSketchLayers from 'html-sketchapp/html2asketch/nodeToSketchLayers';
-
-async function imgToSvg() {
-  const toTextCotent = url => fetch(url, {mode: 'cors'})
-    .then(response => response.blob())
-    .then(blob => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsText(blob);
-    }));
-
-  const tempIterable = Array.from(document.querySelectorAll('img')).map(async elm => {
-    const src = elm.src;
-
-    if (src.indexOf('.svg') !== -1) {
-      const svgString = await toTextCotent(src + '?cache').catch(e => {
-        console.error(e);
-      });
-      const elementStyle = getComputedStyle(elm);
-      const svgContainer = document.createElement('span');
-      svgContainer.setAttribute('style', elementStyle.cssText);
-      svgContainer.style.display = 'inline-block';
-      svgContainer.innerHTML = svgString;
-      elm.insertAdjacentElement('afterEnd', svgContainer);
-      elm.remove();
-    }
-    return 1;
-  });
-
-  return Promise.all(tempIterable);
-}
-
-function groupSVGChildren() {
-  Array.from(document.querySelectorAll('svg')).forEach(function (elm) {
-    elm.innerHTML = '<g>' + elm.innerHTML + '</g>';
-  });
-}
-
-function pseudoToElement() {
+export default function pseudoToElement() {
 
   // after and before to element
   const css = '.before-reset::before, .after-reset::after { content: none !important; }';
@@ -110,37 +69,3 @@ function pseudoToElement() {
     elm.style.display = 'none';
   })
 }
-
-export async function run() {
-
-  await imgToSvg();
-  groupSVGChildren();
-  pseudoToElement();
-
-  const page = new Page({
-    width: document.body.offsetWidth,
-    height: document.body.offsetHeight
-  });
-
-  page.setName(document.title);
-  
-  if (!window.h2s_SelectedElement) {
-    window.h2s_SelectedElement = document.body;
-  }
-
-  const elements = Array.from(window.h2s_SelectedElement.querySelectorAll('*'));
-  elements.unshift(window.h2s_SelectedElement);
-
-  const waitingForDescendant = elements.map(nodeToSketchLayers);
-
-
-  return Promise.all(waitingForDescendant)
-    .then(layers => {
-      layers
-        .reduce((prev, current) => prev.concat(current), [])//single node can produce multiple layers - concatenate them
-        .forEach(layer => page.addLayer(layer));
-
-      return page.toJSON();
-    });
-}
-

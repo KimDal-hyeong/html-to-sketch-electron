@@ -1,17 +1,16 @@
 const {app, Menu, dialog} = require('electron');
 const electron = require('electron');
 
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
-
 const path = require('path');
 const url = require('url');
 
 const updateChecker = require('./updateChecker.js');
-updateChecker();
-
 const commitHash = require('./commitHash.json').commitHash;
 
+updateChecker();
+
+// Module to create native browser window.
+const BrowserWindow = electron.BrowserWindow;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -28,9 +27,6 @@ function createWindow () {
     slashes: true
   }));
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
@@ -39,10 +35,17 @@ function createWindow () {
     mainWindow = null;
   });
 
+  if(process.env.NODE_ENV === 'dev') {
+    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.executeJavaScript('document.getElementsByClassName(\'Content__webview\')[0].openDevTools();');
+    require('electron-connect').client.create(mainWindow);
+  }
+
   const menu = Menu.buildFromTemplate([
     {
       label: app.getName(),
       submenu: [
+        { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }},
         {
           label: 'about',
           click: function () {
@@ -53,6 +56,38 @@ function createWindow () {
               message: 'HTML to Sketch ' + app.getVersion(),
               detail: 'commit : ' + commitHash + '\n\nhttps://github.com/KimDal-hyeong/html-to-sketch-electron'
             })
+          }
+        }
+      ]
+    },
+    {
+      label: "Browse",
+      submenu: [
+        { label: "go back", accelerator: "Cmd+[", selector: "undo:" },
+        { label: "go forward", accelerator: "Cmd+]", selector: "redo:" },
+        { label: "reload", accelerator: "Cmd+R", selector: "redo:" },
+      ]
+    },
+    {
+      label: "Edit",
+      submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+      ]
+    },
+    {
+      label: 'Tools',
+      submenu: [
+        {
+          label: 'Open dev tools',
+          click: function () {
+            mainWindow.webContents.openDevTools();
+            mainWindow.webContents.executeJavaScript('document.getElementsByClassName(\'Content__webview\')[0].openDevTools();');
           }
         }
       ]

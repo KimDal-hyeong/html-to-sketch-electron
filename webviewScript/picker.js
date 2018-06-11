@@ -1,10 +1,14 @@
+import sendToHost from './sendToHost';
+
 const guide = document.createElement('div');
+guide.classList.add('guide');
 guide.style.position = 'fixed';
 guide.style.border = '1px solid #3880ff';
 guide.style.zIndex = '99999999';
 guide.style.pointerEvents = 'none';
 
 const eventCover = document.createElement('div');
+eventCover.classList.add('eventCover');
 eventCover.style.position = 'fixed';
 eventCover.style.left = 0;
 eventCover.style.top = 0;
@@ -17,10 +21,6 @@ document.body.appendChild(guide);
 document.body.appendChild(eventCover);
 
 let nowElement;
-
-function sendToHost(...args) {
-  process.atomBinding('ipc').send('ipc-message-host', args);
-}
 
 function windowResizeInPicked() {
   sendToHost('window-resize');
@@ -40,8 +40,9 @@ function pickerMouseOver(e) {
 }
 
 function pickerMouseDown(e) {
-  window.h2s_SelectedElement = nowElement;
+  window.htmlToSketch.selectedElement = nowElement;
   eventCover.style.pointerEvents = 'auto';
+  eventCover.style.visibility = 'visible';
   guide.style.pointerEvents = 'auto';
   guide.style.background = 'rgba(0, 0, 0, 0)';
   guide.style.outline = '20000px solid rgba(0, 0, 0, 0.4)';
@@ -52,21 +53,22 @@ function pickerMouseDown(e) {
   window.addEventListener('scroll', windowScrollInPicked);
 }
 
-function startPicker() {
+export function startPicker() {
+  guide.style.visibility = 'visible';
   document.body.addEventListener('mouseover', pickerMouseOver);
   document.body.addEventListener('mousedown', pickerMouseDown);
 }
 
-function stopPicker() {
+export function stopPicker() {
   window.h2s_SelectedElement = false;
   guide.style.left = '-9999999px';
+  guide.style.visibility = 'hidden';
   guide.style.outline = 0;
   guide.style.pointerEvents = 'none';
   eventCover.style.pointerEvents = 'none';
+  eventCover.style.visibility = 'hidden';
   document.body.removeEventListener('mouseover', pickerMouseOver);
   document.body.removeEventListener('mousedown', pickerMouseDown);
   window.removeEventListener('resize', windowResizeInPicked);
   window.removeEventListener('scroll', windowScrollInPicked);
 }
-
-export {startPicker, stopPicker};
