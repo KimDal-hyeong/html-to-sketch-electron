@@ -706,9 +706,9 @@ var _page2layers = __webpack_require__(6);
 
 var _page2layers2 = _interopRequireDefault(_page2layers);
 
-var _picker = __webpack_require__(32);
+var _picker = __webpack_require__(33);
 
-var _findFont = __webpack_require__(34);
+var _findFont = __webpack_require__(35);
 
 var _findFont2 = _interopRequireDefault(_findFont);
 
@@ -735,6 +735,10 @@ var _pseudoToElement = __webpack_require__(31);
 
 var _pseudoToElement2 = _interopRequireDefault(_pseudoToElement);
 
+var _backgroundImage = __webpack_require__(32);
+
+var _backgroundImage2 = _interopRequireDefault(_backgroundImage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function getLayerName(node) {
@@ -744,6 +748,7 @@ function getLayerName(node) {
 exports['default'] = function () {
   async function run() {
     (0, _pseudoToElement2['default'])();
+    await (0, _backgroundImage2['default'])();
     var page = (0, _nodeTreeToSketchPage2['default'])(window.htmlToSketch.selectedElement || document.body, {
       getGroupName: getLayerName,
       getRectangleName: getLayerName
@@ -5155,6 +5160,210 @@ function pseudoToElement() {
 
 /***/ }),
 /* 32 */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.fixBackgroundImage = fixBackgroundImage;
+// Parses the background-image. The structure is as follows:
+// (Supports images and gradients)
+// ---
+// <background-image> = <bg-image> [ , <bg-image> ]*
+// <bg-image> = <image> | none
+// <image> = <url> | <image-list> | <element-reference> | <image-combination> | <gradient>
+// ---
+// Source: https://www.w3.org/TR/css-backgrounds-3/#the-background-image
+// ---
+// These functions should be pure to make it easy
+// to write test cases in the future.
+var parseBackgroundImage = function parseBackgroundImage(value) {
+  if (value === 'none') {
+    return;
+  }
+
+  var urlMatches = value.match(/^url\("(.+)"\)$/i);
+  var linearGradientMatches = value.match(/^linear-gradient\((.+)\)$/i);
+
+  if (urlMatches && urlMatches.length === 2) {
+    // Image
+    return {
+      type: 'Image',
+      value: urlMatches[1]
+    };
+  }
+  return;
+};
+
+async function toImageObj(url) {
+  var imageObj = new Image();
+
+  if (url.indexOf('data:') !== 0) {
+    url += '?cache';
+  }
+
+  imageObj.crossOrigin = 'anonymous';
+  await new Promise(function (resolve, reject) {
+    imageObj.src = url;
+    imageObj.onload = resolve;
+    imageObj.onerror = reject;
+  });
+
+  return imageObj;
+}
+
+async function fixBackgroundImage(url, width, height, backgroundSize, backgroundPosition, backgroundRepeat) {
+  var imageData = url;
+
+  try {
+    var imageObj = await toImageObj(url);
+
+    if (imageObj) {
+      var imageW = imageObj.naturalWidth;
+      var imageH = imageObj.naturalHeight;
+      var x = void 0,
+          y = void 0,
+          w = void 0,
+          h = void 0;
+
+      if (backgroundSize === 'cover' && imageW >= imageH || backgroundSize === 'contain' && imageW < imageH) {
+        w = imageW * height / imageH;
+        h = height;
+      } else if (backgroundSize === 'cover' && imageW < imageH || backgroundSize === 'contain' && imageW >= imageH) {
+        w = width;
+        h = imageH * width / imageW;
+      } else if (backgroundSize === 'auto') {
+        w = imageW;
+        h = imageH;
+      } else {
+        var backgroundSizeMatches = backgroundSize.match(/([-]?[0-9.]+)([^ ]+)? ?(?:([-]?[0-9.]+)([^ ])?)?/i);
+
+        if (backgroundSizeMatches) {
+          switch (backgroundSizeMatches[2]) {
+            case 'px':
+              w = backgroundSizeMatches[1];
+              break;
+            case '%':
+              w = width / 100 * backgroundSizeMatches[1];
+              break;
+            default:
+              w = 0;
+          }
+          switch (backgroundSizeMatches[4]) {
+            case 'px':
+              h = backgroundSizeMatches[3];
+              break;
+            case '%':
+              h = height / 100 * backgroundSizeMatches[3];
+              break;
+            default:
+              h = imageH * w / imageW;
+          }
+        }
+      }
+
+      var backgroundPositionMatches = backgroundPosition.match(/([-]?[0-9.]+)([^ ]+)? ([-]?[0-9.]+)([^ ]+)?/i);
+
+      if (backgroundPositionMatches) {
+        switch (backgroundPositionMatches[2]) {
+          case 'px':
+            x = backgroundPositionMatches[1];
+            break;
+          case '%':
+            x = (width - w) / 100 * backgroundPositionMatches[1];
+            break;
+          default:
+            x = 0;
+        }
+        switch (backgroundPositionMatches[4]) {
+          case 'px':
+            y = backgroundPositionMatches[3];
+            break;
+          case '%':
+            y = (height - h) / 100 * backgroundPositionMatches[3];
+            break;
+          default:
+            y = 0;
+        }
+      }
+
+      var canvas = document.createElement('canvas');
+      var context = canvas.getContext('2d');
+
+      if (backgroundRepeat !== 'no-repeat') {
+        // draw patternSource;
+        canvas.width = w;
+        canvas.height = h;
+        context.drawImage(imageObj, 0, 0, imageW, imageH, 0, 0, w, h);
+        imageObj = await toImageObj(canvas.toDataURL('image/png'));
+
+        // draw pattern;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        var patternWidth = x >= 0 ? width + x - Math.ceil(x / w) * w : width - x;
+        var patternHeight = y >= 0 ? height + y - Math.ceil(y / h) * h : height - y;
+
+        canvas.width = patternWidth;
+        canvas.height = patternHeight;
+        var pattern = context.createPattern(imageObj, backgroundRepeat);
+
+        context.fillStyle = pattern;
+        context.fillRect(0, 0, patternWidth, patternHeight);
+
+        imageObj = await toImageObj(canvas.toDataURL('image/png'));
+
+        // draw background image;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = width;
+        canvas.height = height;
+        var patternX = x >= 0 && backgroundRepeat !== 'repeat-y' ? x - Math.ceil(x / w) * w : x;
+        var patternY = y >= 0 && backgroundRepeat !== 'repeat-x' ? y - Math.ceil(y / h) * h : y;
+
+        context.drawImage(imageObj, 0, 0, imageObj.naturalWidth, imageObj.naturalHeight, patternX, patternY, imageObj.naturalWidth, imageObj.naturalHeight);
+      } else {
+        canvas.width = width;
+        canvas.height = height;
+        context.drawImage(imageObj, 0, 0, imageW, imageH, x, y, w, h);
+      }
+      imageData = canvas.toDataURL('image/png');
+    }
+  } catch (e) {
+    console.error(e);
+    return imageData;
+  }
+
+  return imageData;
+}
+
+exports['default'] = function () {
+  async function changingBackgroudImages() {
+    var allElement = window.document.querySelectorAll('*');
+    var allElementArray = Array.from(allElement);
+
+    await Promise.all(allElementArray.map(async function (node) {
+      var _getComputedStyle = getComputedStyle(node),
+          backgroundImage = _getComputedStyle.backgroundImage,
+          backgroundSize = _getComputedStyle.backgroundSize,
+          backgroundPosition = _getComputedStyle.backgroundPosition,
+          backgroundRepeat = _getComputedStyle.backgroundRepeat;
+
+      var _node$getBoundingClie = node.getBoundingClientRect(),
+          width = _node$getBoundingClie.width,
+          height = _node$getBoundingClie.height;
+
+      var backgroundImageResult = parseBackgroundImage(backgroundImage);
+      if (backgroundImageResult && backgroundImageResult.type === 'Image') {
+        var imageUrl = await fixBackgroundImage(backgroundImageResult.value, width, height, backgroundSize, backgroundPosition, backgroundRepeat);
+        console.log(imageUrl);
+        node.style.backgroundImage = 'url("' + String(imageUrl) + '")';
+      }
+    }));
+  }
+
+  return changingBackgroudImages;
+}();
+
+/***/ }),
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5163,7 +5372,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.startPicker = startPicker;
 exports.stopPicker = stopPicker;
 
-var _sendToHost = __webpack_require__(33);
+var _sendToHost = __webpack_require__(34);
 
 var _sendToHost2 = _interopRequireDefault(_sendToHost);
 
@@ -5249,7 +5458,7 @@ function stopPicker() {
 }
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5258,7 +5467,7 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = window.htmlToSketch.sendToHost;
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
