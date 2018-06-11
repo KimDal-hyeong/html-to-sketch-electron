@@ -147,18 +147,12 @@
 <footer>
   <p>
     © 2018 KimDal-hyeong<br>
-    <button type="button" onclick="openBrowser('https://github.com/KimDal-hyeong/html-to-sketch-electron')">https://github.com/KimDal-hyeong/html-to-sketch-electron</button>
+    <button type="button" onclick="htmlToSketch.openUrlInBrowser('https://github.com/KimDal-hyeong/html-to-sketch-electron')">https://github.com/KimDal-hyeong/html-to-sketch-electron</button>
   </p>
 </footer>
 
 <script>
-  const { ipcRenderer } = window.require('electron');
-
-  function openBrowser(url) {
-    ipcRenderer.sendToHost('open-browser', url);
-  }
-
-  ipcRenderer.sendToHost('reset-address-input');
+  htmlToSketch.sendToHost('reset-address-input');
 </script>
 </body>
 </html>

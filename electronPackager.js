@@ -24,10 +24,11 @@ const options = {
     'electronPackager.js',
     'gulpfile.js',
     'package-lock.json',
-    'webpack.config.js',
     'yarn.lock',
     'README.md',
     /.*\.gif/,
+    'node_modules/gulp',
+    'node_modules/electron$',
   ]
 };
 
