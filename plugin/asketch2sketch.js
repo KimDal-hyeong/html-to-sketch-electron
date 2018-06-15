@@ -66,8 +66,6 @@ export default function asketch2sketch(context) {
   asketchPage.layers[0].frame.x = viewRectOrigin.x + viewRectSize.width / 2 - asketchPage.layers[0].frame.width / 2;
   asketchPage.layers[0].frame.y = viewRectOrigin.y + viewRectSize.height / 2 - asketchPage.layers[0].frame.height / 2;
 
-  page.name = asketchPage.name;
-
   const failingLayers = [];
 
   asketchPage.layers
