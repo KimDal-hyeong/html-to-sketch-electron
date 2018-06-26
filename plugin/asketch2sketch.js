@@ -1,16 +1,22 @@
 import UI from 'sketch/ui';
 import {fromSJSONDictionary} from 'sketchapp-json-plugin';
 import {fixTextLayer} from '@brainly/html-sketchapp/asketch2sketch/helpers/fixFont';
-import fixImageFill from '@brainly/html-sketchapp/asketch2sketch/helpers/fixImageFill';
+import fixImageFillsInLayer from '@brainly/html-sketchapp/asketch2sketch/helpers/fixImageFill';
+import fixBitmap from '@brainly/html-sketchapp/asketch2sketch/helpers/fixBitmap';
 import fixSVGLayer from '@brainly/html-sketchapp/asketch2sketch/helpers/fixSVG';
 
 function getNativeLayer(failingLayers, layer) {
+  // debug
+  // console.log('Processing ' + layer.name + ' (' + layer._class + ')');
+
   if (layer._class === 'text') {
     fixTextLayer(layer);
   } else if (layer._class === 'svg') {
     fixSVGLayer(layer);
+  } else if (layer._class === 'bitmap') {
+    fixBitmap(layer);
   } else {
-    fixImageFill(layer);
+    fixImageFillsInLayer(layer);
   }
 
   // Create native object for the current layer, ignore the children for now
