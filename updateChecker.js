@@ -8,13 +8,14 @@ const latestReleaseApi = 'https://api.github.com/repos/KimDal-hyeong/html-to-ske
 
 module.exports =  async function() {
   const latestReleaseInfo = JSON.parse(await requestPromise(latestReleaseApi));
+  const latestVersion = latestReleaseInfo.tag_name;
 
-  if (compareVersions(latestReleaseInfo.tag_name, app.getVersion()) === 1) {
+  if (compareVersions(latestVersion, app.getVersion()) === 1) {
     const dialogOpts = {
       type: 'info',
       title: 'New version',
       buttons: ['Download', 'cancel'],
-      message: '🤗 New version',
+      message: '🤗 New version ' + latestVersion,
       detail: 'A new version is ready. Click the button to download.'
     };
 
