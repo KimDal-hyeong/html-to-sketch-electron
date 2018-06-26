@@ -3,16 +3,9 @@
 <head>
     <title>Download - HTML to Sketch APP</title>
 
+    <meta name="viewport" content="width=device-width, user-scalable=no">
     <meta property="og:title" content="Download - HTML to Sketch APP"/>
     <meta property="og:image" content="og-img.png"/>
-
-    <script>
-      function goToDownload() {
-        setTimeout(function () {
-          window.location = "https://github.com/KimDal-hyeong/html-to-sketch-electron/raw/master/HTML-to-Sketch-app.zip";
-        }, 3000);
-      }
-    </script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=
@@ -23,25 +16,35 @@
       gtag('js', new Date());
 
       gtag('config', 'UA-121427696-1');
-
-      // 페이지 뷰 실행시 다운로드 페이지로 이동
-      gtag('event', 'page_view', {
-        'event_callback': goToDownload
-      });
     </script>
 </head>
 <body style="height: 100vh; background-image: linear-gradient(-117deg, #61CFF8 0%, #3777EA 100%);">
 <div style="text-align: center; padding: 80px 12px; color: #fff; line-height: 1.6; font-family: 'Apple SD Gothic Neo', sans-serif">
     <img src="logo-img.png" width="80" height="83" style="margin-left: -18px;">
-    <h1 style="text-align: center; font-weight: 900; font-size: 40px;">HTML to Sketch</h1>
-    <p style="margin-bottom: 40px; opacity: 0.8;">
-        Downloading...
+    <h1 style="text-align: center; font-weight: 900; font-size: 40px; margin-bottom: 40px; line-height: 1.2;">HTML to Sketch</h1>
+    <p style="margin-bottom: 40px;">
+        <a
+            href="https://github.com/KimDal-hyeong/html-to-sketch-electron/raw/master/HTML-to-Sketch-app.zip"
+            style="
+                display: inline-block;
+                width: 150px;
+                font-weight: 600;
+                background-color: #fff;
+                border-radius: 3px;
+                padding: 13px 0 11px;
+                color: #2c79d0;
+                text-decoration: none;
+                line-height: 1;
+                box-shadow: 0 3px 2px -2px #2b76ca;
+            "
+        >
+            Download
+        </a>
     </p>
-    <p style="font-size: 14px;">
+    <p style="font-size: 13px; opacity: 0.7; margin-bottom: 50px; font-weight: 300;">
         <a style="color: #fff;" href="https://github.com/KimDal-hyeong">KimDal-hyeong</a><br>
         5gockcook@naver.com
     </p>
 </div>
 </body>
 </html>
-
