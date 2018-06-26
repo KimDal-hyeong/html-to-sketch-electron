@@ -7,7 +7,12 @@ const downloadAnalystLink = 'https://kimdal-hyeong.github.io/html-to-sketch-elec
 const latestReleaseApi = 'https://api.github.com/repos/KimDal-hyeong/html-to-sketch-electron/releases/latest';
 
 module.exports =  async function() {
-  const latestReleaseInfo = JSON.parse(await requestPromise(latestReleaseApi));
+  const latestReleaseInfo = JSON.parse(await requestPromise({
+    url: latestReleaseApi,
+    headers: {
+      'User-Agent': 'html-to-sketch-electron',
+    },
+  }));
   const latestVersion = latestReleaseInfo.tag_name;
 
   if (compareVersions(latestVersion, app.getVersion()) === 1) {
