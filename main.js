@@ -61,14 +61,6 @@ function createWindow () {
       ]
     },
     {
-      label: "Browse",
-      submenu: [
-        { label: "go back", accelerator: "Cmd+[", selector: "undo:" },
-        { label: "go forward", accelerator: "Cmd+]", selector: "redo:" },
-        { label: "reload", accelerator: "Cmd+R", selector: "redo:" },
-      ]
-    },
-    {
       label: "Edit",
       submenu: [
         { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },

@@ -4,6 +4,7 @@ const {webview, addressInput, pickerBtn, runBtn} = require(__dirname + '/script/
 const {findFont} = require(__dirname + '/script/fontReplacer');
 const {startPicker, stopPicker} = require(__dirname + '/script/handlePicker');
 const runHtmlToSketch = require(__dirname + '/script/runHtmlToSketch');
+const {showSizeView} = require(__dirname + '/script/handleSizeView');
 
 runBtn.addEventListener('click', () => {
   runHtmlToSketch();
@@ -49,6 +50,10 @@ webview.addEventListener('ipc-message', (event) => {
 
 webview.addEventListener('new-window', e => {
   webview.src = e.url;
+});
+
+webview.addEventListener('resize', () => {
+  showSizeView();
 });
 
 addressInput.onkeydown = function (e) {

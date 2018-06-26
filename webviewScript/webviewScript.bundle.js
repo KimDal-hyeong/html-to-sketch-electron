@@ -61,7 +61,7 @@ var webviewScript =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -91,6 +91,7 @@ var Base = function () {
     this._name = '';
     this._userInfo = null;
     this.setResizingConstraint(_utils.RESIZING_CONSTRAINTS.NONE);
+    this.setHasClippingMask(false);
   }
 
   _createClass(Base, [{
@@ -178,6 +179,15 @@ var Base = function () {
       return setStyle;
     }()
   }, {
+    key: 'setHasClippingMask',
+    value: function () {
+      function setHasClippingMask(hasClippingMask) {
+        this._hasClippingMask = hasClippingMask;
+      }
+
+      return setHasClippingMask;
+    }()
+  }, {
     key: 'toJSON',
     value: function () {
       function toJSON() {
@@ -206,9 +216,11 @@ var Base = function () {
           'resizingType': 0,
           'rotation': 0,
           'shouldBreakMaskChain': false,
-          layers: this._layers.map(function (layer) {
+          'layers': this._layers.map(function (layer) {
             return layer.toJSON();
-          })
+          }),
+          'clippingMaskMode': 0,
+          'hasClippingMask': this._hasClippingMask
         };
 
         if (this._userInfo) {
@@ -241,11 +253,11 @@ exports['default'] = Base;
 exports.RESIZING_CONSTRAINTS = exports.calculateResizingConstraintValue = exports.makeImageFill = exports.makeColorFill = exports.makeColorFromCSS = undefined;
 exports.generateID = generateID;
 
-var _normalizeCssColor = __webpack_require__(14);
+var _normalizeCssColor = __webpack_require__(15);
 
 var _normalizeCssColor2 = _interopRequireDefault(_normalizeCssColor);
 
-var _sketchConstants = __webpack_require__(15);
+var _sketchConstants = __webpack_require__(16);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -269,149 +281,121 @@ function generateID() {
   return e7();
 }
 
-var safeToLower = function () {
-  function safeToLower(input) {
-    if (typeof input === 'string') {
-      return input.toLowerCase();
-    }
-
-    return input;
+var safeToLower = function safeToLower(input) {
+  if (typeof input === 'string') {
+    return input.toLowerCase();
   }
 
-  return safeToLower;
-}();
+  return input;
+};
 
 // Takes colors as CSS hex, name, rgb, rgba, hsl or hsla
-var makeColorFromCSS = exports.makeColorFromCSS = function () {
-  function makeColorFromCSS(input) {
-    var alpha = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+var makeColorFromCSS = exports.makeColorFromCSS = function makeColorFromCSS(input) {
+  var alpha = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
 
-    var nullableColor = (0, _normalizeCssColor2['default'])(safeToLower(input));
-    var colorInt = nullableColor === null ? 0x00000000 : nullableColor;
+  var nullableColor = (0, _normalizeCssColor2['default'])(safeToLower(input));
+  var colorInt = nullableColor === null ? 0x00000000 : nullableColor;
 
-    var _normalizeColor$rgba = _normalizeCssColor2['default'].rgba(colorInt),
-        r = _normalizeColor$rgba.r,
-        g = _normalizeColor$rgba.g,
-        b = _normalizeColor$rgba.b,
-        a = _normalizeColor$rgba.a;
+  var _normalizeColor$rgba = _normalizeCssColor2['default'].rgba(colorInt),
+      r = _normalizeColor$rgba.r,
+      g = _normalizeColor$rgba.g,
+      b = _normalizeColor$rgba.b,
+      a = _normalizeColor$rgba.a;
 
-    return {
-      _class: 'color',
-      red: r / 255,
-      green: g / 255,
-      blue: b / 255,
-      alpha: a * alpha
-    };
-  }
-
-  return makeColorFromCSS;
-}();
+  return {
+    _class: 'color',
+    red: r / 255,
+    green: g / 255,
+    blue: b / 255,
+    alpha: a * alpha
+  };
+};
 
 // Solid color fill
-var makeColorFill = exports.makeColorFill = function () {
-  function makeColorFill(cssColor, alpha) {
-    return {
-      _class: 'fill',
-      isEnabled: true,
-      color: makeColorFromCSS(cssColor, alpha),
-      fillType: 0,
-      noiseIndex: 0,
-      noiseIntensity: 0,
-      patternFillType: 1,
-      patternTileScale: 1
-    };
-  }
+var makeColorFill = exports.makeColorFill = function makeColorFill(cssColor, alpha) {
+  return {
+    _class: 'fill',
+    isEnabled: true,
+    color: makeColorFromCSS(cssColor, alpha),
+    fillType: 0,
+    noiseIndex: 0,
+    noiseIntensity: 0,
+    patternFillType: 1,
+    patternTileScale: 1
+  };
+};
 
-  return makeColorFill;
-}();
+var ensureBase64DataURL = function ensureBase64DataURL(url) {
+  var imageData = url.match(/data:(.+?)(;(.+))?,(.+)/i);
 
-var ensureBase64DataURL = function () {
-  function ensureBase64DataURL(url) {
-    var imageData = url.match(/data:(.+?)(;(.+))?,(.+)/i);
+  if (imageData && imageData[3] !== 'base64') {
+    // Solve for an NSURL bug that can't handle plaintext data: URLs
+    var type = imageData[1];
+    var data = decodeURIComponent(imageData[4]);
+    var encodingMatch = imageData[3] && imageData[3].match(/^charset=(.*)/);
+    var buffer = void 0;
 
-    if (imageData && imageData[3] !== 'base64') {
-      // Solve for an NSURL bug that can't handle plaintext data: URLs
-      var type = imageData[1];
-      var data = decodeURIComponent(imageData[4]);
-      var encodingMatch = imageData[3] && imageData[3].match(/^charset=(.*)/);
-      var buffer = void 0;
-
-      if (encodingMatch) {
-        buffer = Buffer.from(data, encodingMatch[1]);
-      } else {
-        buffer = Buffer.from(data);
-      }
-
-      return 'data:' + String(type) + ';base64,' + String(buffer.toString('base64'));
+    if (encodingMatch) {
+      buffer = Buffer.from(data, encodingMatch[1]);
+    } else {
+      buffer = Buffer.from(data);
     }
 
-    return url;
+    return 'data:' + String(type) + ';base64,' + String(buffer.toString('base64'));
   }
 
-  return ensureBase64DataURL;
-}();
+  return url;
+};
 
 // patternFillType - 0 1 2 3
-var makeImageFill = exports.makeImageFill = function () {
-  function makeImageFill(url) {
-    var patternFillType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-    return {
-      _class: 'fill',
-      isEnabled: true,
-      fillType: _sketchConstants.FillType.Pattern,
-      image: {
-        _class: 'MSJSONOriginalDataReference',
-        _ref_class: 'MSImageData',
-        _ref: 'images/' + String(generateID()),
-        url: url.indexOf('data:') === 0 ? ensureBase64DataURL(url) : url
-      },
-      noiseIndex: 0,
-      noiseIntensity: 0,
-      patternFillType: patternFillType,
-      patternTileScale: 1
-    };
+var makeImageFill = exports.makeImageFill = function makeImageFill(url) {
+  var patternFillType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+  return {
+    _class: 'fill',
+    isEnabled: true,
+    fillType: _sketchConstants.FillType.Pattern,
+    image: {
+      _class: 'MSJSONOriginalDataReference',
+      _ref_class: 'MSImageData',
+      _ref: 'images/' + String(generateID()),
+      url: url.indexOf('data:') === 0 ? ensureBase64DataURL(url) : url
+    },
+    noiseIndex: 0,
+    noiseIntensity: 0,
+    patternFillType: patternFillType,
+    patternTileScale: 1
+  };
+};
+
+var containsAllItems = function containsAllItems(needles, haystack) {
+  return needles.every(function (needle) {
+    return haystack.includes(needle);
+  });
+};
+
+var calculateResizingConstraintValue = exports.calculateResizingConstraintValue = function calculateResizingConstraintValue() {
+  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
   }
 
-  return makeImageFill;
-}();
+  var noHeight = [RESIZING_CONSTRAINTS.TOP, RESIZING_CONSTRAINTS.BOTTOM, RESIZING_CONSTRAINTS.HEIGHT];
+  var noWidth = [RESIZING_CONSTRAINTS.LEFT, RESIZING_CONSTRAINTS.RIGHT, RESIZING_CONSTRAINTS.WIDTH];
+  var validValues = Object.values(RESIZING_CONSTRAINTS);
 
-var containsAllItems = function () {
-  function containsAllItems(needles, haystack) {
-    return needles.every(function (needle) {
-      return haystack.includes(needle);
-    });
+  if (!args.every(function (arg) {
+    return validValues.includes(arg);
+  })) {
+    throw new Error('Unknown resizing constraint');
+  } else if (containsAllItems(noHeight, args)) {
+    throw new Error('Can\'t fix height when top & bottom are fixed');
+  } else if (containsAllItems(noWidth, args)) {
+    throw new Error('Can\'t fix width when left & right are fixed');
   }
 
-  return containsAllItems;
-}();
-
-var calculateResizingConstraintValue = exports.calculateResizingConstraintValue = function () {
-  function calculateResizingConstraintValue() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    var noHeight = [RESIZING_CONSTRAINTS.TOP, RESIZING_CONSTRAINTS.BOTTOM, RESIZING_CONSTRAINTS.HEIGHT];
-    var noWidth = [RESIZING_CONSTRAINTS.LEFT, RESIZING_CONSTRAINTS.RIGHT, RESIZING_CONSTRAINTS.WIDTH];
-    var validValues = Object.values(RESIZING_CONSTRAINTS);
-
-    if (!args.every(function (arg) {
-      return validValues.includes(arg);
-    })) {
-      throw new Error('Unknown resizing constraint');
-    } else if (containsAllItems(noHeight, args)) {
-      throw new Error('Can\'t fix height when top & bottom are fixed');
-    } else if (containsAllItems(noWidth, args)) {
-      throw new Error('Can\'t fix width when left & right are fixed');
-    }
-
-    return args.length > 0 ? args.reduce(function (acc, item) {
-      return acc & item;
-    }, args[0]) : RESIZING_CONSTRAINTS.NONE;
-  }
-
-  return calculateResizingConstraintValue;
-}();
+  return args.length > 0 ? args.reduce(function (acc, item) {
+    return acc & item;
+  }, args[0]) : RESIZING_CONSTRAINTS.NONE;
+};
 
 var RESIZING_CONSTRAINTS = exports.RESIZING_CONSTRAINTS = {
   TOP: 31,
@@ -422,10 +406,91 @@ var RESIZING_CONSTRAINTS = exports.RESIZING_CONSTRAINTS = {
   HEIGHT: 47,
   NONE: 63
 };
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9).Buffer))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10).Buffer))
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function () {
+  function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } }
+
+  return get;
+}();
+
+var _base = __webpack_require__(0);
+
+var _base2 = _interopRequireDefault(_base);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Group = function (_Base) {
+  _inherits(Group, _Base);
+
+  function Group(_ref) {
+    var x = _ref.x,
+        y = _ref.y,
+        width = _ref.width,
+        height = _ref.height;
+
+    _classCallCheck(this, Group);
+
+    var _this = _possibleConstructorReturn(this, (Group.__proto__ || Object.getPrototypeOf(Group)).call(this));
+
+    _this._class = 'group';
+    _this._x = x;
+    _this._y = y;
+    _this._width = width;
+    _this._height = height;
+    return _this;
+  }
+
+  _createClass(Group, [{
+    key: 'toJSON',
+    value: function () {
+      function toJSON() {
+        var obj = _get(Group.prototype.__proto__ || Object.getPrototypeOf(Group.prototype), 'toJSON', this).call(this);
+
+        obj.frame = {
+          '_class': 'rect',
+          'constrainProportions': false,
+          'height': this._height,
+          'width': this._width,
+          'x': this._x,
+          'y': this._y
+        };
+
+        obj.hasClickThrough = false;
+        obj.clippingMaskMode = 0;
+        obj.hasClippingMask = false;
+        obj.windingRule = 1;
+
+        return obj;
+      }
+
+      return toJSON;
+    }()
+  }]);
+
+  return Group;
+}(_base2['default']);
+
+exports['default'] = Group;
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -647,7 +712,7 @@ var Style = function () {
 exports['default'] = Style;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -684,7 +749,8 @@ function isNodeVisible(node) {
 
   // skip node when display is set to none for itself or an ancestor
   // helps us catch things such as <noscript>
-  if (node.tagName !== 'BODY' && node.offsetParent === null && position !== 'fixed') {
+  // HTMLSlotElement has a null offsetParent, but should still be visible
+  if (node.tagName !== 'BODY' && node.offsetParent === null && position !== 'fixed' && node.tagName.toLowerCase() !== 'slot') {
     return false;
   }
 
@@ -701,7 +767,7 @@ function isNodeVisible(node) {
   }
 
   // node is detached from the DOM
-  if (!document.contains(node)) {
+  if (!node.isConnected) {
     return false;
   }
 
@@ -715,14 +781,14 @@ function isNodeVisible(node) {
 }
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(5);
+module.exports = __webpack_require__(6);
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -730,13 +796,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.findFont = exports.stopPicker = exports.startPicker = exports.page2layers = undefined;
 
-var _page2layers = __webpack_require__(6);
+var _page2layers = __webpack_require__(7);
 
 var _page2layers2 = _interopRequireDefault(_page2layers);
 
-var _picker = __webpack_require__(33);
+var _picker = __webpack_require__(35);
 
-var _findFont = __webpack_require__(35);
+var _findFont = __webpack_require__(37);
 
 var _findFont2 = _interopRequireDefault(_findFont);
 
@@ -748,22 +814,22 @@ exports.stopPicker = _picker.stopPicker;
 exports.findFont = _findFont2['default'];
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _nodeTreeToSketchPage = __webpack_require__(7);
+var _nodeTreeToSketchPage = __webpack_require__(8);
 
 var _nodeTreeToSketchPage2 = _interopRequireDefault(_nodeTreeToSketchPage);
 
-var _pseudoToElement = __webpack_require__(31);
+var _pseudoToElement = __webpack_require__(33);
 
 var _pseudoToElement2 = _interopRequireDefault(_pseudoToElement);
 
-var _backgroundImage = __webpack_require__(32);
+var _backgroundImage = __webpack_require__(34);
 
 var _backgroundImage2 = _interopRequireDefault(_backgroundImage);
 
@@ -789,7 +855,7 @@ exports['default'] = function () {
 }();
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -797,15 +863,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports['default'] = nodeTreeToSketchPage;
 
-var _artboard = __webpack_require__(8);
+var _artboard = __webpack_require__(9);
 
 var _artboard2 = _interopRequireDefault(_artboard);
 
-var _page = __webpack_require__(16);
+var _page = __webpack_require__(17);
 
 var _page2 = _interopRequireDefault(_page);
 
-var _nodeTreeToSketchGroup = __webpack_require__(17);
+var _nodeTreeToSketchGroup = __webpack_require__(18);
 
 var _nodeTreeToSketchGroup2 = _interopRequireDefault(_nodeTreeToSketchGroup);
 
@@ -847,7 +913,7 @@ function nodeTreeToSketchPage(node, options) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -944,7 +1010,7 @@ var Artboard = function (_Base) {
 exports['default'] = Artboard;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -958,9 +1024,9 @@ exports['default'] = Artboard;
 
 
 
-var base64 = __webpack_require__(11);
-var ieee754 = __webpack_require__(12);
-var isArray = __webpack_require__(13);
+var base64 = __webpack_require__(12);
+var ieee754 = __webpack_require__(13);
+var isArray = __webpack_require__(14);
 
 exports.Buffer = Buffer;
 exports.SlowBuffer = SlowBuffer;
@@ -2909,10 +2975,10 @@ function blitBuffer(src, dst, offset, length) {
 function isnan(val) {
   return val !== val; // eslint-disable-line no-self-compare
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -2939,7 +3005,7 @@ try {
 module.exports = g;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3066,7 +3132,7 @@ function fromByteArray(uint8) {
 }
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -3155,7 +3221,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 };
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -3165,7 +3231,7 @@ module.exports = Array.isArray || function (arr) {
 };
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 /*
@@ -3517,7 +3583,7 @@ normalizeColor.rgba = rgba;
 module.exports = normalizeColor;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3646,7 +3712,7 @@ var CurvePointMode = exports.CurvePointMode = {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -3739,7 +3805,7 @@ var Page = function (_Base) {
 exports['default'] = Page;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -3747,11 +3813,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports['default'] = nodeTreeToSketchGroup;
 
-var _group = __webpack_require__(18);
+var _group = __webpack_require__(2);
 
 var _group2 = _interopRequireDefault(_group);
 
-var _style = __webpack_require__(2);
+var _style = __webpack_require__(3);
 
 var _style2 = _interopRequireDefault(_style);
 
@@ -3759,7 +3825,7 @@ var _nodeToSketchLayers = __webpack_require__(20);
 
 var _nodeToSketchLayers2 = _interopRequireDefault(_nodeToSketchLayers);
 
-var _visibility = __webpack_require__(3);
+var _visibility = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -3776,9 +3842,14 @@ function nodeTreeToSketchGroup(node, options) {
 
   if (node.nodeName !== 'svg') {
     // Recursively collect child groups for child nodes
-    Array.from(node.children).forEach(function (childNode) {
-      if ((0, _visibility.isNodeVisible)(childNode)) {
-        layers.push(nodeTreeToSketchGroup(childNode, options));
+    Array.from(node.children).filter(_visibility.isNodeVisible).forEach(function (childNode) {
+      layers.push(nodeTreeToSketchGroup(childNode, options));
+
+      // Traverse the shadow DOM if present
+      if (childNode.shadowRoot) {
+        Array.from(childNode.shadowRoot.children).filter(_visibility.isNodeVisible).map(nodeTreeToSketchGroup).forEach(function (layer) {
+          return layers.push(layer);
+        });
       }
     });
   }
@@ -3814,87 +3885,6 @@ function nodeTreeToSketchGroup(node, options) {
 
   return group;
 }
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function () {
-  function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } }
-
-  return get;
-}();
-
-var _base = __webpack_require__(0);
-
-var _base2 = _interopRequireDefault(_base);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Group = function (_Base) {
-  _inherits(Group, _Base);
-
-  function Group(_ref) {
-    var x = _ref.x,
-        y = _ref.y,
-        width = _ref.width,
-        height = _ref.height;
-
-    _classCallCheck(this, Group);
-
-    var _this = _possibleConstructorReturn(this, (Group.__proto__ || Object.getPrototypeOf(Group)).call(this));
-
-    _this._class = 'group';
-    _this._x = x;
-    _this._y = y;
-    _this._width = width;
-    _this._height = height;
-    return _this;
-  }
-
-  _createClass(Group, [{
-    key: 'toJSON',
-    value: function () {
-      function toJSON() {
-        var obj = _get(Group.prototype.__proto__ || Object.getPrototypeOf(Group.prototype), 'toJSON', this).call(this);
-
-        obj.frame = {
-          '_class': 'rect',
-          'constrainProportions': false,
-          'height': this._height,
-          'width': this._width,
-          'x': this._x,
-          'y': this._y
-        };
-
-        obj.hasClickThrough = false;
-        obj.clippingMaskMode = 0;
-        obj.hasClippingMask = false;
-        obj.windingRule = 1;
-
-        return obj;
-      }
-
-      return toJSON;
-    }()
-  }]);
-
-  return Group;
-}(_base2['default']);
-
-exports['default'] = Group;
 
 /***/ }),
 /* 19 */
@@ -3957,39 +3947,49 @@ var _rectangle = __webpack_require__(21);
 
 var _rectangle2 = _interopRequireDefault(_rectangle);
 
-var _svg = __webpack_require__(22);
+var _bitmap = __webpack_require__(22);
+
+var _bitmap2 = _interopRequireDefault(_bitmap);
+
+var _svg = __webpack_require__(23);
 
 var _svg2 = _interopRequireDefault(_svg);
 
-var _shapeGroup = __webpack_require__(23);
+var _shapeGroup = __webpack_require__(24);
 
 var _shapeGroup2 = _interopRequireDefault(_shapeGroup);
 
-var _style = __webpack_require__(2);
+var _group = __webpack_require__(2);
+
+var _group2 = _interopRequireDefault(_group);
+
+var _style = __webpack_require__(3);
 
 var _style2 = _interopRequireDefault(_style);
 
-var _text = __webpack_require__(24);
+var _text = __webpack_require__(25);
 
 var _text2 = _interopRequireDefault(_text);
 
-var _textStyle = __webpack_require__(25);
+var _textStyle = __webpack_require__(26);
 
 var _textStyle2 = _interopRequireDefault(_textStyle);
 
-var _createXPathFromElement = __webpack_require__(26);
+var _createXPathFromElement = __webpack_require__(27);
 
 var _createXPathFromElement2 = _interopRequireDefault(_createXPathFromElement);
 
-var _background = __webpack_require__(27);
+var _background = __webpack_require__(28);
 
-var _svg3 = __webpack_require__(28);
+var _shadow = __webpack_require__(29);
 
-var _bcr = __webpack_require__(29);
+var _svg3 = __webpack_require__(30);
 
-var _text3 = __webpack_require__(30);
+var _bcr = __webpack_require__(31);
 
-var _visibility = __webpack_require__(3);
+var _text3 = __webpack_require__(32);
+
+var _visibility = __webpack_require__(4);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -3999,36 +3999,6 @@ var DEFAULT_VALUES = {
   borderWidth: '0px',
   boxShadow: 'none'
 };
-
-function shadowStringToObjects(shadowStr) {
-  var shadowStrings = shadowStr.split(/x, |t, /).map(function (str, i, array) {
-    if (i + 1 < array.length) {
-      if (str.match(/inse$/)) {
-        return str + 't';
-      } else if (str.match(/p$/)) {
-        return str + 'x';
-      }
-    }
-    return str;
-  });
-
-  var shadowObjects = [];
-
-  shadowStrings.forEach(function (string) {
-    var matches = string.match(/^([a-z0-9#., ()]+) ([-]?[0-9.]+)px ([-]?[0-9.]+)px ([-]?[0-9.]+)px ([-]?[0-9.]+)px ?(inset)?$/i);
-
-    if (matches && matches.length === 7) {
-      shadowObjects.push({
-        color: matches[1],
-        offsetX: parseInt(matches[2], 10),
-        offsetY: parseInt(matches[3], 10),
-        blur: parseInt(matches[4], 10),
-        spread: parseInt(matches[5], 10)
-      });
-    }
-  });
-  return shadowObjects;
-}
 
 function hasOnlyDefaultStyles(styles) {
   return Object.keys(DEFAULT_VALUES).every(function (key) {
@@ -4056,6 +4026,20 @@ function isSVGDescendant(node) {
   return node instanceof SVGElement && node.matches('svg *');
 }
 
+/**
+ * @param {string} fontWeight font weight as provided by the browser
+ * @return {number} normalized font weight
+ */
+function parseFontWeight(fontWeight) {
+  // Support 'bold' and 'normal' for Electron compatibility.
+  if (fontWeight === 'bold') {
+    return 700;
+  } else if (fontWeight === 'normal') {
+    return 400;
+  }
+  return parseInt(fontWeight, 10);
+}
+
 function nodeToSketchLayers(node, options) {
   var layers = [];
   var bcr = node.getBoundingClientRect();
@@ -4068,6 +4052,8 @@ function nodeToSketchLayers(node, options) {
   var styles = getComputedStyle(node);
   var backgroundColor = styles.backgroundColor,
       backgroundImage = styles.backgroundImage,
+      backgroundPositionX = styles.backgroundPositionX,
+      backgroundPositionY = styles.backgroundPositionY,
       borderColor = styles.borderColor,
       borderWidth = styles.borderWidth,
       borderTopWidth = styles.borderTopWidth,
@@ -4133,32 +4119,15 @@ function nodeToSketchLayers(node, options) {
       shapeGroup.setFixedWidthAndHeight();
     }
 
-    // This should return a array when multiple background-images are supported
-    var backgroundImageResult = (0, _background.parseBackgroundImage)(backgroundImage);
-
-    if (backgroundImageResult) {
-      switch (backgroundImageResult.type) {
-        case 'Image':
-          style.addImageFill(backgroundImageResult.value);
-          break;
-        case 'LinearGradient':
-          style.addGradientFill(backgroundImageResult.value);
-          break;
-        default:
-          // Unsupported types:
-          // - radial gradient
-          // - multiple background-image
-          break;
-      }
-    }
-
     if (boxShadow !== DEFAULT_VALUES.boxShadow) {
-      var shadowObjects = shadowStringToObjects(boxShadow);
+      var shadowStrings = (0, _shadow.splitShadowString)(boxShadow);
 
-      shadowObjects.forEach(function (shadowObject) {
-        if (boxShadow.indexOf('inset') !== -1) {
+      shadowStrings.forEach(function (shadowString) {
+        var shadowObject = (0, _shadow.shadowStringToObject)(shadowString);
+
+        if (shadowObject.inset) {
           if (borderWidth.indexOf(' ') === -1) {
-            shadowObject.spread += parseInt(borderWidth, 10);
+            shadowObject.spread += parseFloat(borderWidth);
           }
           style.addInnerShadow(shadowObject);
         } else {
@@ -4169,19 +4138,24 @@ function nodeToSketchLayers(node, options) {
 
     // support for one-side borders (using inner shadow because Sketch doesn't support that)
     if (borderWidth.indexOf(' ') === -1) {
-      style.addBorder({ color: borderColor, thickness: parseInt(borderWidth, 10) });
+      style.addBorder({ color: borderColor, thickness: parseFloat(borderWidth) });
     } else {
-      if (borderTopWidth !== '0px') {
-        style.addInnerShadow(shadowStringToObjects(borderTopColor + ' 0px ' + borderTopWidth + ' 0px 0px inset')[0]);
+      var borderTopWidthFloat = parseFloat(borderTopWidth);
+      var borderRightWidthFloat = parseFloat(borderRightWidth);
+      var borderBottomWidthFloat = parseFloat(borderBottomWidth);
+      var borderLeftWidthFloat = parseFloat(borderLeftWidth);
+
+      if (borderTopWidthFloat !== 0) {
+        style.addInnerShadow({ color: borderTopColor, offsetY: borderTopWidthFloat, blur: 0 });
       }
-      if (borderRightWidth !== '0px') {
-        style.addInnerShadow(shadowStringToObjects(borderRightColor + ' -' + borderRightWidth + ' 0px 0px 0px inset')[0]);
+      if (borderRightWidthFloat !== 0) {
+        style.addInnerShadow({ color: borderRightColor, offsetX: -borderRightWidthFloat, blur: 0 });
       }
-      if (borderBottomWidth !== '0px') {
-        style.addInnerShadow(shadowStringToObjects(borderBottomColor + ' 0px -' + borderBottomWidth + ' 0px 0px inset')[0]);
+      if (borderBottomWidthFloat !== 0) {
+        style.addInnerShadow({ color: borderBottomColor, offsetY: -borderBottomWidthFloat, blur: 0 });
       }
-      if (borderLeftWidth !== '0px') {
-        style.addInnerShadow(shadowStringToObjects(borderLeftColor + ' ' + borderLeftWidth + ' 0px 0px 0px inset')[0]);
+      if (borderLeftWidthFloat !== 0) {
+        style.addInnerShadow({ color: borderLeftColor, offsetX: borderLeftWidthFloat, blur: 0 });
       }
     }
 
@@ -4203,7 +4177,63 @@ function nodeToSketchLayers(node, options) {
 
     shapeGroup.addLayer(rectangle);
 
-    layers.push(shapeGroup);
+    // This should return a array when multiple background-images are supported
+    var backgroundImageResult = (0, _background.parseBackgroundImage)(backgroundImage);
+
+    var layer = shapeGroup;
+
+    if (backgroundImageResult) {
+
+      switch (backgroundImageResult.type) {
+        case 'Image':
+          {
+            var img = new Image();
+
+            img.src = backgroundImageResult.value;
+
+            var bitmapX = parseInt(backgroundPositionX, 10);
+            var bitmapY = parseInt(backgroundPositionY, 10);
+
+            if (bitmapX === 0 && bitmapY === 0 && img.width <= width && img.height <= height) {
+              // background image fits entirely inside the node, so we can represent it with a (cheaper) image fill
+              style.addImageFill(backgroundImageResult.value);
+            } else {
+              // use a Group(Shape + Bitmap) to correctly represent clipping of the background image
+              var bm = new _bitmap2['default']({
+                url: backgroundImageResult.value,
+                x: bitmapX,
+                y: bitmapY,
+                width: img.width,
+                height: img.height
+              });
+
+              bm.setName('background-image');
+              shapeGroup.setHasClippingMask(true);
+
+              var group = new _group2['default']({ x: left, y: top, width: width, height: height });
+
+              // position is relative to the group
+              shapeGroup.setPosition({ x: 0, y: 0 });
+              group.addLayer(shapeGroup);
+              group.addLayer(bm);
+
+              layer = group;
+            }
+
+            break;
+          }
+        case 'LinearGradient':
+          style.addGradientFill(backgroundImageResult.value);
+          break;
+        default:
+          // Unsupported types:
+          // - radial gradient
+          // - multiple background-image
+          break;
+      }
+    }
+
+    layers.push(layer);
   }
 
   if (isSVG) {
@@ -4232,7 +4262,7 @@ function nodeToSketchLayers(node, options) {
     fontSize: parseInt(fontSize, 10),
     lineHeight: lineHeight !== 'normal' ? parseInt(lineHeight, 10) : undefined,
     letterSpacing: letterSpacing !== 'normal' ? parseFloat(letterSpacing) : undefined,
-    fontWeight: fontWeight === 'bold' ? 700 : parseInt(fontWeight, 10),
+    fontWeight: parseFontWeight(fontWeight),
     color: color,
     textTransform: textTransform,
     textDecoration: textDecorationLine,
@@ -4411,6 +4441,93 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function () {
+  function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } }
+
+  return get;
+}();
+
+var _base = __webpack_require__(0);
+
+var _base2 = _interopRequireDefault(_base);
+
+var _utils = __webpack_require__(1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Bitmap = function (_Base) {
+  _inherits(Bitmap, _Base);
+
+  function Bitmap(_ref) {
+    var url = _ref.url,
+        x = _ref.x,
+        y = _ref.y,
+        width = _ref.width,
+        height = _ref.height;
+
+    _classCallCheck(this, Bitmap);
+
+    var _this = _possibleConstructorReturn(this, (Bitmap.__proto__ || Object.getPrototypeOf(Bitmap)).call(this));
+
+    _this._class = 'bitmap';
+    _this._url = url;
+    _this._x = x;
+    _this._y = y;
+    _this._width = width;
+    _this._height = height;
+    return _this;
+  }
+
+  _createClass(Bitmap, [{
+    key: 'toJSON',
+    value: function () {
+      function toJSON() {
+        var obj = _get(Bitmap.prototype.__proto__ || Object.getPrototypeOf(Bitmap.prototype), 'toJSON', this).call(this);
+
+        obj.frame = {
+          '_class': 'rect',
+          'constrainProportions': false,
+          'x': this._x,
+          'y': this._y,
+          'height': this._height,
+          'width': this._width
+        };
+
+        obj.image = {
+          _class: 'MSJSONOriginalDataReference',
+          _ref_class: 'MSImageData',
+          _ref: 'images/' + String((0, _utils.generateID)()),
+          url: this._url
+        };
+
+        return obj;
+      }
+
+      return toJSON;
+    }()
+  }]);
+
+  return Bitmap;
+}(_base2['default']);
+
+exports['default'] = Bitmap;
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _base = __webpack_require__(0);
 
 var _base2 = _interopRequireDefault(_base);
@@ -4457,7 +4574,8 @@ var SVG = function (_Base) {
           height: this._height,
           x: this._x,
           y: this._y,
-          resizingConstraint: this._resizingConstraint
+          resizingConstraint: this._resizingConstraint,
+          hasClippingMask: this._hasClippingMask
         };
       }
 
@@ -4471,7 +4589,7 @@ var SVG = function (_Base) {
 exports['default'] = SVG;
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -4512,14 +4630,26 @@ var ShapeGroup = function (_Base) {
     var _this = _possibleConstructorReturn(this, (ShapeGroup.__proto__ || Object.getPrototypeOf(ShapeGroup)).call(this));
 
     _this._class = 'shapeGroup';
-    _this._x = x;
-    _this._y = y;
     _this._width = width;
     _this._height = height;
+    _this.setPosition({ x: x, y: y });
     return _this;
   }
 
   _createClass(ShapeGroup, [{
+    key: 'setPosition',
+    value: function () {
+      function setPosition(_ref2) {
+        var x = _ref2.x,
+            y = _ref2.y;
+
+        this._x = x;
+        this._y = y;
+      }
+
+      return setPosition;
+    }()
+  }, {
     key: 'toJSON',
     value: function () {
       function toJSON() {
@@ -4535,8 +4665,6 @@ var ShapeGroup = function (_Base) {
         };
 
         obj.hasClickThrough = false;
-        obj.clippingMaskMode = 0;
-        obj.hasClippingMask = false;
         obj.windingRule = 1;
 
         return obj;
@@ -4552,7 +4680,7 @@ var ShapeGroup = function (_Base) {
 exports['default'] = ShapeGroup;
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -4651,7 +4779,7 @@ var Text = function (_Base) {
 exports['default'] = Text;
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -4769,7 +4897,7 @@ var TextStyle = function () {
 exports['default'] = TextStyle;
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -4816,7 +4944,7 @@ function createXPathFromElement(elm) {
 }
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -4833,36 +4961,32 @@ Object.defineProperty(exports, "__esModule", {
 // ---
 // These functions should be pure to make it easy
 // to write test cases in the future.
-var parseBackgroundImage = function () {
-  function parseBackgroundImage(value) {
-    if (value === 'none') {
-      return;
-    }
-
-    var urlMatches = value.match(/^url\("(.+)"\)$/i);
-    var linearGradientMatches = value.match(/^linear-gradient\((.+)\)$/i);
-
-    if (urlMatches && urlMatches.length === 2) {
-      // Image
-      return {
-        type: 'Image',
-        value: urlMatches[1]
-      };
-    } else if (linearGradientMatches && linearGradientMatches.length === 2) {
-      // Linear gradient
-      var linearGradientConfig = parseLinearGradient(linearGradientMatches[1]);
-
-      if (linearGradientConfig) {
-        return {
-          type: 'LinearGradient',
-          value: linearGradientConfig
-        };
-      }
-    }
+var parseBackgroundImage = function parseBackgroundImage(value) {
+  if (value === 'none') {
+    return;
   }
 
-  return parseBackgroundImage;
-}();
+  var urlMatches = value.match(/^url\("(.+)"\)$/i);
+  var linearGradientMatches = value.match(/^linear-gradient\((.+)\)$/i);
+
+  if (urlMatches && urlMatches.length === 2) {
+    // Image
+    return {
+      type: 'Image',
+      value: urlMatches[1]
+    };
+  } else if (linearGradientMatches && linearGradientMatches.length === 2) {
+    // Linear gradient
+    var linearGradientConfig = parseLinearGradient(linearGradientMatches[1]);
+
+    if (linearGradientConfig) {
+      return {
+        type: 'LinearGradient',
+        value: linearGradientConfig
+      };
+    }
+  }
+};
 
 // Parser for a linear gradient:
 // ---
@@ -4876,65 +5000,103 @@ var parseBackgroundImage = function () {
 // Source: https://www.w3.org/TR/css3-images/#linear-gradients
 // ---
 // Example: "to top, rgba(67, 90, 111, 0.04), white"
-var parseLinearGradient = function () {
-  function parseLinearGradient(value) {
-    var parts = [];
-    var currentPart = [];
-    var i = 0;
-    var skipComma = false;
+var parseLinearGradient = function parseLinearGradient(value) {
+  var parts = [];
+  var currentPart = [];
+  var i = 0;
+  var skipComma = false;
 
-    // There can be commas in colors, carefully break apart the value
-    while (i < value.length) {
-      var char = value.substr(i, 1);
+  // There can be commas in colors, carefully break apart the value
+  while (i < value.length) {
+    var char = value.substr(i, 1);
 
-      if (char === '(') {
-        skipComma = true;
-      } else if (char === ')') {
-        skipComma = false;
-      }
-
-      if (char === ',' && !skipComma) {
-        parts.push(currentPart.join('').trim());
-        currentPart = [];
-      } else {
-        currentPart.push(char);
-      }
-
-      if (i === value.length - 1) {
-        parts.push(currentPart.join('').trim());
-      }
-      i++;
+    if (char === '(') {
+      skipComma = true;
+    } else if (char === ')') {
+      skipComma = false;
     }
 
-    if (parts.length === 2) {
-      // Assume 2 color stops
-      return {
-        angle: '180deg',
-        stops: [parts[0], parts[1]]
-      };
-    } else if (parts.length > 2) {
-      // angle + n stops
-      var angle = parts[0],
-          stops = parts.slice(1);
-
-
-      return {
-        angle: angle,
-        stops: stops
-      };
+    if (char === ',' && !skipComma) {
+      parts.push(currentPart.join('').trim());
+      currentPart = [];
+    } else {
+      currentPart.push(char);
     }
 
-    // Syntax is wrong
-    return null;
+    if (i === value.length - 1) {
+      parts.push(currentPart.join('').trim());
+    }
+    i++;
   }
 
-  return parseLinearGradient;
-}();
+  if (parts.length === 2) {
+    // Assume 2 color stops
+    return {
+      angle: '180deg',
+      stops: [parts[0], parts[1]]
+    };
+  } else if (parts.length > 2) {
+    // angle + n stops
+    var angle = parts[0],
+        stops = parts.slice(1);
+
+
+    return {
+      angle: angle,
+      stops: stops
+    };
+  }
+
+  // Syntax is wrong
+  return null;
+};
 
 exports.parseBackgroundImage = parseBackgroundImage;
 
 /***/ }),
-/* 28 */
+/* 29 */
+/***/ (function(module, exports) {
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var splitShadowString = function splitShadowString(boxShadow) {
+  var shadowStrings = boxShadow.split(/x, |t, /).map(function (str, i, array) {
+    if (i + 1 < array.length) {
+      if (str.match(/inse$/)) {
+        return str + 't';
+      } else if (str.match(/p$/)) {
+        return str + 'x';
+      }
+    }
+    return str;
+  }).filter(function (shadow) {
+    return shadow.length > 0;
+  });
+
+  return shadowStrings;
+};
+
+var shadowStringToObject = function shadowStringToObject(shadowString) {
+  var matches = shadowString.match(/^([a-z0-9#., ()]+) ([-]?[0-9.]+)px ([-]?[0-9.]+)px ([-]?[0-9.]+)px ([-]?[0-9.]+)px ?(inset)?$/i);
+
+  if (matches && matches.length === 7) {
+    return {
+      color: matches[1],
+      offsetX: parseFloat(matches[2]),
+      offsetY: parseFloat(matches[3]),
+      blur: parseFloat(matches[4]),
+      spread: parseFloat(matches[5]),
+      inset: matches[6] !== undefined
+    };
+  }
+};
+
+exports.splitShadowString = splitShadowString;
+exports.shadowStringToObject = shadowStringToObject;
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5023,7 +5185,7 @@ function getSVGString(svgNode) {
 }
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5091,7 +5253,7 @@ function getGroupBCR(nodes) {
 }
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5116,7 +5278,7 @@ function fixWhiteSpace(text, whiteSpace) {
 }
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5196,7 +5358,7 @@ function pseudoToElement() {
 }
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5399,7 +5561,7 @@ exports['default'] = function () {
 }();
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5408,7 +5570,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.startPicker = startPicker;
 exports.stopPicker = stopPicker;
 
-var _sendToHost = __webpack_require__(34);
+var _sendToHost = __webpack_require__(36);
 
 var _sendToHost2 = _interopRequireDefault(_sendToHost);
 
@@ -5494,7 +5656,7 @@ function stopPicker() {
 }
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
@@ -5503,7 +5665,7 @@ Object.defineProperty(exports, "__esModule", {
 exports["default"] = window.htmlToSketch.sendToHost;
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports) {
 
 Object.defineProperty(exports, "__esModule", {
