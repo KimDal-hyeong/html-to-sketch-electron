@@ -1,2 +1,19 @@
 <script>
+  function goToDownload() {
+    window.location = "https://github.com/KimDal-hyeong/html-to-sketch-electron/raw/master/HTML-to-Sketch-app.zip";
+  };
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-121427696-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-121427696-1');
+  
+  gtag('event', 'page_view', {
+   'event_callback': goToDownload
+  });
 </script>
