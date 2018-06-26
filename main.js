@@ -7,8 +7,6 @@ const url = require('url');
 const updateChecker = require('./updateChecker.js');
 const commitHash = require('./commitHash.json').commitHash;
 
-updateChecker();
-
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
@@ -86,6 +84,8 @@ function createWindow () {
     }
   ]);
   Menu.setApplicationMenu(menu);
+
+  updateChecker();
 }
 
 // This method will be called when Electron has finished
