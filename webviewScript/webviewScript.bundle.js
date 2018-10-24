@@ -646,7 +646,7 @@ var Style = function () {
         var _ref4$color = _ref4.color,
             color = _ref4$color === undefined ? '#000' : _ref4$color,
             _ref4$blur = _ref4.blur,
-            blur = _ref4$blur === undefined ? 1 : _ref4$blur,
+            blur = _ref4$blur === undefined ? 0 : _ref4$blur,
             _ref4$offsetX = _ref4.offsetX,
             offsetX = _ref4$offsetX === undefined ? 0 : _ref4$offsetX,
             _ref4$offsetY = _ref4.offsetY,
@@ -3837,12 +3837,16 @@ function nodeTreeToSketchGroup(node, options) {
 
   if (node.nodeName !== 'svg') {
     // Recursively collect child groups for child nodes
-    Array.from(node.children).filter(_visibility.isNodeVisible).forEach(function (childNode) {
+    Array.from(node.children).filter(function (node) {
+      return (0, _visibility.isNodeVisible)(node);
+    }).forEach(function (childNode) {
       layers.push(nodeTreeToSketchGroup(childNode, options));
 
       // Traverse the shadow DOM if present
       if (childNode.shadowRoot) {
-        Array.from(childNode.shadowRoot.children).filter(_visibility.isNodeVisible).map(nodeTreeToSketchGroup).forEach(function (layer) {
+        Array.from(childNode.shadowRoot.children).filter(function (node) {
+          return (0, _visibility.isNodeVisible)(node);
+        }).map(nodeTreeToSketchGroup).forEach(function (layer) {
           return layers.push(layer);
         });
       }
@@ -4049,6 +4053,7 @@ function nodeToSketchLayers(node, options) {
       backgroundImage = styles.backgroundImage,
       backgroundPositionX = styles.backgroundPositionX,
       backgroundPositionY = styles.backgroundPositionY,
+      backgroundSize = styles.backgroundSize,
       borderColor = styles.borderColor,
       borderWidth = styles.borderWidth,
       borderTopWidth = styles.borderTopWidth,
@@ -4141,16 +4146,16 @@ function nodeToSketchLayers(node, options) {
       var borderLeftWidthFloat = parseFloat(borderLeftWidth);
 
       if (borderTopWidthFloat !== 0) {
-        style.addInnerShadow({ color: borderTopColor, offsetY: borderTopWidthFloat, blur: 0 });
+        style.addInnerShadow({ color: borderTopColor, offsetY: borderTopWidthFloat });
       }
       if (borderRightWidthFloat !== 0) {
-        style.addInnerShadow({ color: borderRightColor, offsetX: -borderRightWidthFloat, blur: 0 });
+        style.addInnerShadow({ color: borderRightColor, offsetX: -borderRightWidthFloat });
       }
       if (borderBottomWidthFloat !== 0) {
-        style.addInnerShadow({ color: borderBottomColor, offsetY: -borderBottomWidthFloat, blur: 0 });
+        style.addInnerShadow({ color: borderBottomColor, offsetY: -borderBottomWidthFloat });
       }
       if (borderLeftWidthFloat !== 0) {
-        style.addInnerShadow({ color: borderLeftColor, offsetX: borderLeftWidthFloat, blur: 0 });
+        style.addInnerShadow({ color: borderLeftColor, offsetX: borderLeftWidthFloat });
       }
     }
 
@@ -4172,7 +4177,7 @@ function nodeToSketchLayers(node, options) {
 
     shapeGroup.addLayer(rectangle);
 
-    // This should return a array when multiple background-images are supported
+    // This should return a array once multiple background-images are supported
     var backgroundImageResult = (0, _background.parseBackgroundImage)(backgroundImage);
 
     var layer = shapeGroup;
@@ -4186,10 +4191,13 @@ function nodeToSketchLayers(node, options) {
 
             img.src = backgroundImageResult.value;
 
-            var bitmapX = parseInt(backgroundPositionX, 10);
-            var bitmapY = parseInt(backgroundPositionY, 10);
+            // TODO add support for % values
+            var bitmapX = parseFloat(backgroundPositionX);
+            var bitmapY = parseFloat(backgroundPositionY);
 
-            if (bitmapX === 0 && bitmapY === 0 && img.width <= width && img.height <= height) {
+            var actualImgSize = (0, _background.getActualImageSize)(backgroundSize, { width: img.width, height: img.height }, { width: width, height: height });
+
+            if (bitmapX === 0 && bitmapY === 0 && actualImgSize.width === img.width && actualImgSize.height === img.height) {
               // background image fits entirely inside the node, so we can represent it with a (cheaper) image fill
               style.addImageFill(backgroundImageResult.value);
             } else {
@@ -4198,8 +4206,8 @@ function nodeToSketchLayers(node, options) {
                 url: backgroundImageResult.value,
                 x: bitmapX,
                 y: bitmapY,
-                width: img.width,
-                height: img.height
+                width: actualImgSize.width,
+                height: actualImgSize.height
               });
 
               bm.setName('background-image');
@@ -4945,6 +4953,9 @@ function createXPathFromElement(elm) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 // Parses the background-image. The structure is as follows:
 // (Supports images and gradients)
 // ---
@@ -5046,7 +5057,86 @@ var parseLinearGradient = function parseLinearGradient(value) {
   return null;
 };
 
+/**
+ * @param {string} backgroundSize value of background-size CSS property
+ * @param {{width: number, height: number}} imageSize natural size of the image
+ * @param {{width: number, height: number}} containerSize size of the container
+ * @return {{width: number, height: number}} actual image size
+ */
+var getActualImageSize = function getActualImageSize(backgroundSize, imageSize, containerSize) {
+  var width = void 0,
+      height = void 0;
+
+  // sanity check
+  if (imageSize.width === 0 || imageSize.height === 0 || containerSize.width === 0 || containerSize.height === 0) {
+    width = 0;
+    height = 0;
+  } else if (backgroundSize === 'cover') {
+    if (imageSize.width > imageSize.height) {
+      height = containerSize.height;
+      width = height / imageSize.height * imageSize.width;
+    } else {
+      width = containerSize.width;
+      height = width / imageSize.width * imageSize.height;
+    }
+  } else if (backgroundSize === 'contain') {
+    if (imageSize.width > imageSize.height) {
+      width = containerSize.width;
+      height = width / imageSize.width * imageSize.height;
+    } else {
+      height = containerSize.height;
+      width = height / imageSize.height * imageSize.width;
+    }
+  } else if (backgroundSize === 'auto') {
+    width = imageSize.width;
+    height = imageSize.height;
+  } else {
+    // we currently don't support multiple backgrounds
+    var _backgroundSize$split = backgroundSize.split(','),
+        _backgroundSize$split2 = _slicedToArray(_backgroundSize$split, 1),
+        singleBackgroundSize = _backgroundSize$split2[0];
+
+    var _singleBackgroundSize = singleBackgroundSize.trim().split(' '),
+        _singleBackgroundSize2 = _slicedToArray(_singleBackgroundSize, 2),
+        backgroundSizeWidth = _singleBackgroundSize2[0],
+        backgroundSizeHeight = _singleBackgroundSize2[1];
+
+    if (backgroundSizeWidth === 'auto' || backgroundSizeWidth === undefined) {
+      backgroundSizeWidth = null;
+    } else if (backgroundSizeWidth.endsWith('%')) {
+      backgroundSizeWidth = parseFloat(backgroundSizeWidth) / 100 * containerSize.width;
+    } else if (backgroundSizeWidth.endsWith('px')) {
+      backgroundSizeWidth = parseFloat(backgroundSizeWidth);
+    }
+
+    if (backgroundSizeHeight === 'auto' || backgroundSizeHeight === undefined) {
+      backgroundSizeHeight = null;
+    } else if (backgroundSizeHeight.endsWith('%')) {
+      backgroundSizeHeight = parseFloat(backgroundSizeHeight) / 100 * containerSize.height;
+    } else if (backgroundSizeHeight.endsWith('px')) {
+      backgroundSizeHeight = parseFloat(backgroundSizeHeight);
+    }
+
+    if (backgroundSizeWidth !== null && backgroundSizeHeight === null) {
+      width = backgroundSizeWidth;
+      height = width / imageSize.width * imageSize.height;
+    } else if (backgroundSizeWidth === null && backgroundSizeHeight !== null) {
+      height = backgroundSizeHeight;
+      width = height / imageSize.height * imageSize.width;
+    } else if (backgroundSizeWidth !== null && backgroundSizeHeight !== null) {
+      width = backgroundSizeWidth;
+      height = backgroundSizeHeight;
+    }
+  }
+
+  return {
+    width: width,
+    height: height
+  };
+};
+
 exports.parseBackgroundImage = parseBackgroundImage;
+exports.getActualImageSize = getActualImageSize;
 
 /***/ }),
 /* 29 */
