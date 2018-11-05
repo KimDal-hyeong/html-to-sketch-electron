@@ -1,7 +1,7 @@
 {
   "name": "html-to-sektch-electron",
   "main": "main.js",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "scripts": {
     "start": "webpack --config ./webviewScript/webpack.config.js && gulp start",
     "start:dev": "webpack --config ./webviewScript/webpack.config.js && NODE_ENV=dev gulp start",
