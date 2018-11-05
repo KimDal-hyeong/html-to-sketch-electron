@@ -4,14 +4,31 @@ const fontManager = require('font-manager');
 function getFontReplacerValues() {
   const fontReplacerSelectors = document.getElementsByClassName('Option__font-selector');
   return Array.from(fontReplacerSelectors).map(select => {
+    const origin = select.getAttribute('name');
+    const replace = select.value !== '' ? select.value : select.getAttribute('name');
+
+    // localStorage에 변환 기록을 저장
+    let replaceHistory = localStorage.getItem('replaceHistory');
+    replaceHistory = JSON.parse(replaceHistory);
+    replaceHistory[origin] = replace;
+    localStorage.setItem('replaceHistory', JSON.stringify(replaceHistory));
+
     return {
-      origin: select.getAttribute('name'),
-      replace: select.value !== '' ? select.value : select.getAttribute('name')
+      origin,
+      replace,
     }
   })
 }
 
 function drawFontReplacer(fontFamilies) {
+
+  let replaceHistory = localStorage.getItem('replaceHistory');
+  if (!replaceHistory) {
+    localStorage.setItem('replaceHistory', '{}');
+    replaceHistory = localStorage.getItem('replaceHistory');
+  }
+  replaceHistory = JSON.parse(replaceHistory);
+
   options.innerHTML = '';
 
   const systemFontFamilies = fontManager.getAvailableFontsSync().map(font => {return font.family}).sort();
@@ -57,6 +74,13 @@ function drawFontReplacer(fontFamilies) {
     li.appendChild(div);
     let clonedSystemFontSelector = systemFontSelector.cloneNode(true);
     clonedSystemFontSelector.setAttribute('name', fontFamily);
+
+    // replaceHistory에 해당 폰트의 변환 기록이 있으면 해당 값을 value로 지정
+    if (replaceHistory[fontFamily]) {
+      clonedSystemFontSelector.value = replaceHistory[fontFamily];
+    }
+
+    // li에 select 추가
     li.appendChild(clonedSystemFontSelector);
     html.appendChild(li);
   });
