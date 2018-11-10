@@ -59,6 +59,7 @@ webview.addEventListener('resize', () => {
 addressInput.onkeydown = function (e) {
   if (e.key === 'Enter') {
     const url = addressInput.value;
+    gtag('event', '주소창 이동', {event_category: 'html to sketch electron', value: url});
     addressInput.value = url;
     webview.src = url.indexOf('//') === -1 ? 'http://' + url : url;
     addressInput.blur();

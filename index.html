@@ -350,6 +350,30 @@
     }
 
   </style>
+
+  <!-- Google Analytics -->
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-121427696-1', 'auto');
+    ga('set', {
+      page: 'app',
+      title: 'app'
+    });
+
+    ga('send', 'pageview');
+
+    ga(function(tracker) {
+      console.log(tracker.get('name'));
+      console.log(tracker.get('clientId'));
+      console.log(tracker.get('referrer'));
+      console.log(tracker.get('page'));
+    });
+  </script>
+  <!-- End Google Analytics -->
 </head>
 <body>
 <div class="Header">
@@ -376,7 +400,7 @@
   </div>
 </div>
 <div class="SideBar">
-  <button class="SideBar__pick-btn">
+  <button class="SideBar__pick-btn" onclick="gtag('event', 'Pick 클릭', {event_category: 'html to sketch electron'});">
     <span class="SideBar__pick-btn-content--pick-mode">
       <svg class="SideBar__pick-btn-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="14" viewBox="0 0 13 14">
         <path fill="#424242" d="M156.110047,679.676772 L158.876142,682.442868 L157.729672,683.589338 L154.982756,680.842422 L152.996359,683.521516 L150.724747,675.308762 L158.9375,677.580375 L156.110047,679.676772 Z M158.145409,675.496069 L156.822266,675.496069 L156.822266,672.133511 C156.822266,672.011719 156.723534,671.912987 156.601742,671.912987 L147.549495,671.912987 C147.427703,671.912987 147.328971,672.011719 147.328971,672.133511 L147.328971,681.185758 C147.328971,681.30755 147.427703,681.406282 147.549495,681.406282 L150.949041,681.406282 L150.949041,682.729425 L147.549495,682.729425 C146.696951,682.729425 146.005828,682.038302 146.005828,681.185758 L146.005828,672.133511 C146.005828,671.280967 146.696951,670.589844 147.549495,670.589844 L156.601742,670.589844 C157.454286,670.589844 158.145409,671.280967 158.145409,672.133511 L158.145409,675.496069 Z" transform="translate(-146 -670)"/>
@@ -387,7 +411,7 @@
       Cancel
     </span>
   </button>
-  <button class="SideBar__run-btn" type="button">
+  <button class="SideBar__run-btn" type="button" onclick="gtag('event', 'Draw 클릭', {event_category: 'html to sketch electron'});">
     <svg class="SideBar__run-btn-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14">
       <g fill="none" stroke="#2E2E2E" stroke-linecap="round" stroke-linejoin="round" stroke-width=".9" transform="translate(.554 1.021)">
         <polygon points="2.994 .406 6.862 0 10.73 .406 13.725 4.393 6.862 12.32 0 4.393"/>
@@ -443,6 +467,5 @@
     webview.addEventListener("dom-ready", () => {webview.openDevTools();});
   }
 </script>
-
 </body>
 </html>
