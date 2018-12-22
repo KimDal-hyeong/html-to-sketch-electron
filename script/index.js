@@ -17,6 +17,10 @@ function findFontEvent(e) {
 }
 
 webview.addEventListener("dom-ready", function (e) {
+  if (webview.src === 'https://kimdal-hyeong.github.io/html-to-sketch-electron/download-analyst/?utm_source=in-app') {
+    addressInput.value = '';
+  }
+
   const script = fs.readFileSync(__dirname + '/webviewScript/webviewScript.bundle.js', 'utf8');
   webview.executeJavaScript(script);
 
@@ -41,9 +45,6 @@ webview.addEventListener('ipc-message', (event) => {
     case 'window-resize':
     case 'window-scroll':
       stopPicker();
-      break;
-    case 'reset-address-input':
-      addressInput.value = '';
       break;
   }
 });
