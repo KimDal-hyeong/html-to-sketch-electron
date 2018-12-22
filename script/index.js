@@ -1,10 +1,13 @@
 const fs = require('fs');
+const appVersion = require('electron').remote.app.getVersion();
 
-const {webview, addressInput, pickerBtn, runBtn} = require(__dirname + '/script/getElements');
+const {webview, addressInput, pickerBtn, runBtn, title} = require(__dirname + '/script/getElements');
 const {findFont} = require(__dirname + '/script/fontReplacer');
 const {startPicker, stopPicker} = require(__dirname + '/script/handlePicker');
 const runHtmlToSketch = require(__dirname + '/script/runHtmlToSketch');
 const {showSizeView} = require(__dirname + '/script/handleSizeView');
+
+title.innerText = title.innerText + ' v' + appVersion;
 
 runBtn.addEventListener('click', () => {
   runHtmlToSketch();
