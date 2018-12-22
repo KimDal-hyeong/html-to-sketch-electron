@@ -3,7 +3,7 @@ const compareVersions = require('compare-versions');
 const open = require("open");
 const {app, dialog} = require('electron');
 
-const downloadAnalystLink = 'https://kimdal-hyeong.github.io/html-to-sketch-electron/download-analyst/';
+const downloadAnalystLink = 'https://kimdal-hyeong.github.io/html-to-sketch-electron/download-analyst/?utm_source=update-alert';
 const latestReleaseApi = 'https://api.github.com/repos/KimDal-hyeong/html-to-sketch-electron/releases/latest';
 
 module.exports =  async function() {
