@@ -2,9 +2,10 @@
 # yarn lockfile v1
 
 
-"@brainly/html-sketchapp@4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@brainly/html-sketchapp/-/html-sketchapp-4.0.1.tgz#dd197eff18ce500040aa73c30c7189182c37ebe1"
+"@brainly/html-sketchapp@4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@brainly/html-sketchapp/-/html-sketchapp-4.1.0.tgz#d8b03172efa65f7ce3f0567c0df3db76cc67d8b0"
+  integrity sha512-J3ENfjKvOsMmHOK5+YDUOSnlmot5OSPLH+f5Plx2wgxNgyvNUUt8Cbmll7pnlGYCnSxSkXyRVhLRc+ULq8ztdg==
   dependencies:
     murmur2js "^1.0.0"
     normalize-css-color "^1.0.2"
@@ -1604,9 +1605,10 @@ electron-to-chromium@^1.3.47:
   version "1.3.50"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.50.tgz#7438b76f92b41b919f3fbdd350fbd0757dacddf7"
 
-electron@^2.0.2:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-2.0.3.tgz#8e591e820cae2ccdb0c3fd74c6d07834913fc133"
+electron@^2.0.8:
+  version "2.0.13"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-2.0.13.tgz#db3949cf4d9d4569be0cec010624746793a406c9"
+  integrity sha512-8ouYaLsp0F4sPI7QKgJkkJhrwj1JPSnBwbz6HHA9l6u7WofEt94lV+gHw71KJrDl7UaIkFwlSjyhIjG8lIZqxw==
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^3.0.1"

@@ -82,12 +82,15 @@ var DEFAULT_USER_INFO_SCOPE = 'html-sketchapp';
 
 var Base = function () {
   function Base() {
+    var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+        id = _ref.id;
+
     _classCallCheck(this, Base);
 
     this._class = null;
     this._layers = [];
     this._style = null;
-    this._objectID = (0, _utils.generateID)();
+    this._objectID = id || (0, _utils.generateID)();
     this._name = '';
     this._userInfo = null;
     this.setResizingConstraint(_utils.RESIZING_CONSTRAINTS.NONE);
@@ -120,6 +123,15 @@ var Base = function () {
       }
 
       return getID;
+    }()
+  }, {
+    key: 'setObjectID',
+    value: function () {
+      function setObjectID(id) {
+        this._objectID = id;
+      }
+
+      return setObjectID;
     }()
 
     // scope defines which Sketch plugin will have access to provided data via Settings.setLayerSettingForKey
@@ -443,11 +455,12 @@ var Group = function (_Base) {
     var x = _ref.x,
         y = _ref.y,
         width = _ref.width,
-        height = _ref.height;
+        height = _ref.height,
+        id = _ref.id;
 
     _classCallCheck(this, Group);
 
-    var _this = _possibleConstructorReturn(this, (Group.__proto__ || Object.getPrototypeOf(Group)).call(this));
+    var _this = _possibleConstructorReturn(this, (Group.__proto__ || Object.getPrototypeOf(Group)).call(this, { id: id }));
 
     _this._class = 'group';
     _this._x = x;
@@ -942,11 +955,12 @@ var Artboard = function (_Base) {
     var x = _ref.x,
         y = _ref.y,
         width = _ref.width,
-        height = _ref.height;
+        height = _ref.height,
+        id = _ref.id;
 
     _classCallCheck(this, Artboard);
 
-    var _this = _possibleConstructorReturn(this, (Artboard.__proto__ || Object.getPrototypeOf(Artboard)).call(this));
+    var _this = _possibleConstructorReturn(this, (Artboard.__proto__ || Object.getPrototypeOf(Artboard)).call(this, { id: id }));
 
     _this._class = 'artboard';
     _this._x = x;
@@ -3739,11 +3753,12 @@ var Page = function (_Base) {
 
   function Page(_ref) {
     var width = _ref.width,
-        height = _ref.height;
+        height = _ref.height,
+        id = _ref.id;
 
     _classCallCheck(this, Page);
 
-    var _this = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this));
+    var _this = _possibleConstructorReturn(this, (Page.__proto__ || Object.getPrototypeOf(Page)).call(this, { id: id }));
 
     _this._class = 'page';
     _this._width = width;
@@ -4305,6 +4320,10 @@ function nodeToSketchLayers(node, options) {
       multiline: numberOfLines > 1
     });
 
+    if (options && options.onTextGenerate) {
+      options.onTextGenerate({ layer: text, node: textNode });
+    }
+
     layers.push(text);
   });
 
@@ -4346,11 +4365,12 @@ var Rectangle = function (_Base) {
     var width = _ref.width,
         height = _ref.height,
         _ref$cornerRadius = _ref.cornerRadius,
-        cornerRadius = _ref$cornerRadius === undefined ? { topLeft: 0, bottomLeft: 0, topRight: 0, bottomRight: 0 } : _ref$cornerRadius;
+        cornerRadius = _ref$cornerRadius === undefined ? { topLeft: 0, bottomLeft: 0, topRight: 0, bottomRight: 0 } : _ref$cornerRadius,
+        id = _ref.id;
 
     _classCallCheck(this, Rectangle);
 
-    var _this = _possibleConstructorReturn(this, (Rectangle.__proto__ || Object.getPrototypeOf(Rectangle)).call(this));
+    var _this = _possibleConstructorReturn(this, (Rectangle.__proto__ || Object.getPrototypeOf(Rectangle)).call(this, { id: id }));
 
     _this._class = 'rectangle';
     _this._width = width;
@@ -4472,11 +4492,12 @@ var Bitmap = function (_Base) {
         x = _ref.x,
         y = _ref.y,
         width = _ref.width,
-        height = _ref.height;
+        height = _ref.height,
+        id = _ref.id;
 
     _classCallCheck(this, Bitmap);
 
-    var _this = _possibleConstructorReturn(this, (Bitmap.__proto__ || Object.getPrototypeOf(Bitmap)).call(this));
+    var _this = _possibleConstructorReturn(this, (Bitmap.__proto__ || Object.getPrototypeOf(Bitmap)).call(this, { id: id }));
 
     _this._class = 'bitmap';
     _this._url = url;
@@ -4551,11 +4572,12 @@ var SVG = function (_Base) {
         y = _ref.y,
         width = _ref.width,
         height = _ref.height,
-        rawSVGString = _ref.rawSVGString;
+        rawSVGString = _ref.rawSVGString,
+        id = _ref.id;
 
     _classCallCheck(this, SVG);
 
-    var _this = _possibleConstructorReturn(this, (SVG.__proto__ || Object.getPrototypeOf(SVG)).call(this));
+    var _this = _possibleConstructorReturn(this, (SVG.__proto__ || Object.getPrototypeOf(SVG)).call(this, { id: id }));
 
     _this._rawSVGString = rawSVGString;
     _this._width = width;
@@ -4626,11 +4648,12 @@ var ShapeGroup = function (_Base) {
     var x = _ref.x,
         y = _ref.y,
         width = _ref.width,
-        height = _ref.height;
+        height = _ref.height,
+        id = _ref.id;
 
     _classCallCheck(this, ShapeGroup);
 
-    var _this = _possibleConstructorReturn(this, (ShapeGroup.__proto__ || Object.getPrototypeOf(ShapeGroup)).call(this));
+    var _this = _possibleConstructorReturn(this, (ShapeGroup.__proto__ || Object.getPrototypeOf(ShapeGroup)).call(this, { id: id }));
 
     _this._class = 'shapeGroup';
     _this._width = width;
@@ -4722,11 +4745,12 @@ var Text = function (_Base) {
         height = _ref.height,
         text = _ref.text,
         style = _ref.style,
-        multiline = _ref.multiline;
+        multiline = _ref.multiline,
+        id = _ref.id;
 
     _classCallCheck(this, Text);
 
-    var _this = _possibleConstructorReturn(this, (Text.__proto__ || Object.getPrototypeOf(Text)).call(this));
+    var _this = _possibleConstructorReturn(this, (Text.__proto__ || Object.getPrototypeOf(Text)).call(this, { id: id }));
 
     _this._class = 'text';
     _this._x = x;
@@ -5191,7 +5215,7 @@ exports.getSVGString = getSVGString;
 // based on https://www.w3.org/TR/SVG2/styling.html and defaults taken from Chrome
 var SVG_STYLE_PROPERTIES = [
 //name, default value
-['cx', '0px'], ['cy', '0px'], ['height', 'auto'], ['width', 'auto'], ['x', '0px'], ['y', '0px'], ['r', '0px'], ['rx', 'auto'], ['ry', 'auto'], ['d', 'none'], ['fill', 'rgb(0, 0, 0)'], ['transform', 'none'], ['alignment-baseline', 'auto'], ['baseline-shift', '0px'], ['clip', 'auto'], ['clip-path', 'none'], ['clip-rule', 'nonzero'], ['color', 'rgb(0, 0, 0)'], ['color-interpolation', 'sRGB'], ['color-interpolation-filters', 'linearRGB'], ['color-rendering', 'auto'], ['cursor', 'auto'], ['direction', 'ltr'], ['display', 'inline'], ['dominant-baseline', 'auto'], ['fill-opacity', '1'], ['fill-rule', 'nonzero'], ['filter', 'none'], ['flood-color', 'rgb(0, 0, 0)'], ['flood-opacity', '1'], ['font-family', 'Times'], ['font-size', '16px'], ['font-size-adjust', 'none'], ['font-stretch', '100%'], ['font-style', 'normal'], ['font-variant', 'normal'], ['font-weight', '400'], ['glyph-orientation-horizontal', undefined], ['glyph-orientation-vertical', undefined], ['image-rendering', 'auto'], ['letter-spacing', 'normal'], ['lighting-color', 'rgb(255, 255, 255)'], ['marker-end', 'none'], ['marker-mid', 'none'], ['marker-start', 'none'], ['mask', 'none'], ['opacity', '1'], ['overflow', 'visible'], ['pointer-events', 'auto'], ['shape-rendering', 'auto'], ['solid-color', undefined], ['solid-opacity', undefined], ['stop-color', 'rgb(0, 0, 0)'], ['stop-opacity', '1'], ['stroke', 'none'], ['stroke-dasharray', 'none'], ['stroke-dashoffset', '0px'], ['stroke-linecap', 'butt'], ['stroke-linejoin', 'miter'], ['stroke-miterlimit', '4'], ['stroke-opacity', '1'], ['stroke-width', '1px'], ['text-anchor', 'start'], ['text-decoration', 'none solid rgb(0, 0, 0)'], ['text-overflow', 'clip'], ['text-rendering', 'auto'], ['unicode-bidi', 'normal'], ['vector-effect', 'none'], ['visibility', 'visible'], ['white-space', 'normal'], ['word-spacing', '0px'], ['writing-mode', 'horizontal-tb']];
+['cx', '0px'], ['cy', '0px'], ['height', 'auto'], ['width', 'auto'], ['x', '0px'], ['y', '0px'], ['r', '0px'], ['rx', 'auto'], ['ry', 'auto'], ['d', 'none'], ['fill', 'rgb(0, 0, 0)'], ['transform', 'none'], ['alignment-baseline', 'auto'], ['baseline-shift', '0px'], ['clip', 'auto'], ['clip-path', 'none'], ['clip-rule', 'nonzero'], ['color', 'rgb(0, 0, 0)'], ['color-interpolation', 'srgb'], ['color-interpolation-filters', 'linearrgb'], ['color-rendering', 'auto'], ['cursor', 'auto'], ['direction', 'ltr'], ['display', 'inline'], ['dominant-baseline', 'auto'], ['fill-opacity', '1'], ['fill-rule', 'nonzero'], ['filter', 'none'], ['flood-color', 'rgb(0, 0, 0)'], ['flood-opacity', '1'], ['font-family', 'Times'], ['font-size', '16px'], ['font-size-adjust', 'none'], ['font-stretch', '100%'], ['font-style', 'normal'], ['font-variant', 'normal'], ['font-weight', '400'], ['glyph-orientation-horizontal', undefined], ['glyph-orientation-vertical', undefined], ['image-rendering', 'auto'], ['letter-spacing', 'normal'], ['lighting-color', 'rgb(255, 255, 255)'], ['marker-end', 'none'], ['marker-mid', 'none'], ['marker-start', 'none'], ['mask', 'none'], ['opacity', '1'], ['overflow', 'visible'], ['pointer-events', 'auto'], ['shape-rendering', 'auto'], ['solid-color', undefined], ['solid-opacity', undefined], ['stop-color', 'rgb(0, 0, 0)'], ['stop-opacity', '1'], ['stroke', 'none'], ['stroke-dasharray', 'none'], ['stroke-dashoffset', '0px'], ['stroke-linecap', 'butt'], ['stroke-linejoin', 'miter'], ['stroke-miterlimit', '4'], ['stroke-opacity', '1'], ['stroke-width', '1px'], ['text-anchor', 'start'], ['text-decoration', 'none solid rgb(0, 0, 0)'], ['text-overflow', 'clip'], ['text-rendering', 'auto'], ['unicode-bidi', 'normal'], ['vector-effect', 'none'], ['visibility', 'visible'], ['white-space', 'normal'], ['word-spacing', '0px'], ['writing-mode', 'horizontal-tb']];
 
 function inlineStyles(node) {
   var styles = getComputedStyle(node);
