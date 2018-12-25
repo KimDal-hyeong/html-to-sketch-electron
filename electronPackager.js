@@ -15,7 +15,7 @@ const options = {
   icon: 'resources/icon.icns',
   platform: 'darwin',
   arch: 'x64',
-  asar: true,
+  asar: false,
   overwrite: true,
   prune: false,
   appVersion: appVersion,

@@ -1,0 +1,9 @@
+{
+  "commands": [
+    {
+      "identifier": "run",
+      "script": "./run.js",
+      "handler": ["onRun"]
+    }
+  ]
+}

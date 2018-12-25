@@ -1,4 +1,5 @@
 module.exports = {
+  mode: 'production',
   entry: [
     __dirname + '/index.js'
   ],
@@ -6,19 +7,6 @@ module.exports = {
     path: __dirname,
     filename: 'webviewScript.bundle.js',
     library: 'webviewScript'
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ['airbnb']
-          }
-        }
-      }
-    ]
   },
   node: {
     fs: 'empty',
