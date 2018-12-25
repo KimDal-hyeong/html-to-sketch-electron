@@ -5,7 +5,7 @@ const {replaceFont} = require(__dirname + '/fontReplacer');
 function runHtmlToSketch() {
   alert.classList.add('Alert--loading');
   webview.executeJavaScript('webviewScript.page2layers();', false, function (result) {
-    const jsonString = replaceFont(JSON.stringify(result, null, 2));
+    const jsonString = replaceFont(JSON.stringify(result));
 
     runPlugin(jsonString, function() {
       alert.classList.remove('Alert--loading');

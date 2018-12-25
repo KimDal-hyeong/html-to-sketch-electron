@@ -3,7 +3,13 @@ const exec = require('child_process').exec;
 const { sketchtoolRunCommand } = require('@skpm/builder/lib/utils/webpackCommandPlugin/webpackShellPlugin');
 
 async function runPlugin (json, callback) {
-  const command = sketchtoolRunCommand(path.resolve(__dirname, '../plugin/asketch2sketch.sketchplugin'), 'run', {context: { json }});
+  const command = sketchtoolRunCommand(
+    path.resolve(__dirname, '../plugin/asketch2sketch.sketchplugin'),
+    'run',
+    {context: { json }}
+  )
+    .split('--context="').join('--context=\'')
+    .split('" 2>&1').join('\' 2>&1');
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
@@ -11,9 +17,8 @@ async function runPlugin (json, callback) {
     }
     console.log(`stdout: ${stdout}`);
     console.log(`stderr: ${stderr}`);
+    callback();
   });
-
-  callback();
 }
 
 module.exports = runPlugin;
