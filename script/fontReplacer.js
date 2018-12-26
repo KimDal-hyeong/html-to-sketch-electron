@@ -8,10 +8,12 @@ function getFontReplacerValues() {
     const replace = select.value !== '' ? select.value : select.getAttribute('name');
 
     // localStorage에 변환 기록을 저장
-    let replaceHistory = localStorage.getItem('replaceHistory');
-    replaceHistory = JSON.parse(replaceHistory);
-    replaceHistory[origin] = replace;
-    localStorage.setItem('replaceHistory', JSON.stringify(replaceHistory));
+    if (origin !== replace) {
+      let replaceHistory = localStorage.getItem('replaceHistory');
+      replaceHistory = JSON.parse(replaceHistory);
+      replaceHistory[origin] = replace;
+      localStorage.setItem('replaceHistory', JSON.stringify(replaceHistory));
+    }
 
     return {
       origin,
