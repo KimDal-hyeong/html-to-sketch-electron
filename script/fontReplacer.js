@@ -31,7 +31,8 @@ function drawFontReplacer(fontFamilies) {
 
   options.innerHTML = '';
 
-  const systemFontFamilies = fontManager.getAvailableFontsSync().map(font => {return font.family}).sort();
+  const systemFontFamilies = fontManager.getAvailableFontsSync().map(font => {return font.family})
+    .reduce((a,b) => { if (a.indexOf(b) < 0 ) a.push(b); return a;},[]).sort();
 
   let systemFontSelector = document.createElement('select');
   systemFontSelector.classList.add('Option__font-selector');

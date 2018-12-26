@@ -1888,7 +1888,11 @@ var _asketch2sketch2 = _interopRequireDefault(_asketch2sketch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function run(context) {
-  var asketchFile = JSON.parse(context.json);
+  var asketchFile =
+  /*JSON*/
+  {}
+  /*JSON*/
+  ;
   (0, _asketch2sketch2["default"])(context, [asketchFile]);
 }
 

@@ -79,6 +79,12 @@ function createWindow () {
             mainWindow.webContents.openDevTools();
             mainWindow.webContents.executeJavaScript('document.getElementsByClassName(\'Content__webview\')[0].openDevTools();');
           }
+        },
+        {
+          label: 'Reset font replacement history',
+          click: function () {
+            mainWindow.webContents.executeJavaScript('localStorage.removeItem(\'replaceHistory\'); document.getElementsByClassName(\'Content__webview\')[0].reload();');
+          }
         }
       ]
     }
