@@ -98,7 +98,7 @@ function findFont(webview) {
 
 function replaceFont(string) {
   getFontReplacerValues().forEach(setting => {
-    string = string.replace(new RegExp(setting.origin, 'g'), setting.replace);
+    string = string.replace(new RegExp(`"fontFamily":"${setting.origin}"`, 'g'), `"fontFamily":"${setting.replace}"`);
   });
 
   return string;
