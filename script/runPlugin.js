@@ -3,7 +3,7 @@ const path = require('path');
 const exec = require('child_process').exec;
 const { sketchtoolRunCommand } = require('@skpm/builder/lib/utils/webpackCommandPlugin/webpackShellPlugin');
 const { app } = require('electron').remote;
-const pluginDirPath = path.resolve(app.getPath('appData'), 'HTML to Sketch Electron');
+const pluginDirPath = path.resolve(app.getPath('appData'), 'html-to-sektch-electron');
 
 const JSON_POSITION_COMMENT = '/*JSON*/';
 
