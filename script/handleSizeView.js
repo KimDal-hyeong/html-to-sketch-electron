@@ -1,4 +1,4 @@
-const {webview, webviewSizeView} = require(__dirname + '/getElements');
+const {webview, webviewSizeView} = require('./getElements');
 
 let timeOut;
 

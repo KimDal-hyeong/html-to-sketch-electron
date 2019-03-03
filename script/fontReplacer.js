@@ -1,5 +1,5 @@
-const {options} = require(__dirname + '/getElements');
 const fontManager = require('font-manager');
+const {options} = require('./getElements');
 
 function getFontReplacerValues() {
   const fontReplacerSelectors = document.getElementsByClassName('Option__font-selector');

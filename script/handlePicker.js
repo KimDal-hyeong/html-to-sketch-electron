@@ -1,4 +1,4 @@
-const {webview, pickerBtn, runBtn} = require(__dirname + '/getElements');
+const {webview, pickerBtn, runBtn} = require('./getElements');
 
 function startPicker() {
   webview.executeJavaScript('webviewScript.startPicker();');

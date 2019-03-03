@@ -22,14 +22,13 @@ async function runPlugin (json, callback) {
   fs.writeFileSync(path.resolve(pluginDirPath, 'asketch2sketch.sketchplugin/Contents/Sketch/run.js'), newPluginCode);
 
   const command = sketchtoolRunCommand(path.resolve(pluginDirPath, 'asketch2sketch.sketchplugin'), 'run');
-  exec(command, (error, stdout, stderr) => {
+  exec(command, (error, stdout) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return;
     }
     console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-    callback();
+    callback(stdout.trim());
   });
 }
 
