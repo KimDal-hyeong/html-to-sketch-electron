@@ -1,6 +1,6 @@
 const requestPromise = require('request-promise');
 const compareVersions = require('compare-versions');
-const open = require("open");
+const open = require('open');
 const {app, dialog} = require('electron');
 
 const downloadAnalystLink = 'https://kimdal-hyeong.github.io/html-to-sketch-electron/download-analyst/?utm_source=update-alert';
