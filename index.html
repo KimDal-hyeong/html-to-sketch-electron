@@ -19,6 +19,12 @@
       list-style: none;
     }
 
+    h3 {
+      font-size: 15px;
+      margin-bottom: 12px;
+      margin-left: 3px;
+    }
+
     /* 헤더 */
     .Header {
       position: fixed;
@@ -71,6 +77,11 @@
       width: 100%;
       height: 100%;
       padding: 50px 255px 0 0;
+    }
+
+    .Content__webview {
+      width: 100%;
+      height: 100%;
     }
 
     .Content__size-view {
@@ -360,7 +371,7 @@
     }
 
     .Option {
-      padding: 24px 0;
+      padding: 0 0 24px;
     }
 
     .Option__font-label {
@@ -389,6 +400,25 @@
 
     .Option__font-selector:invalid {
       color: #565656;
+    }
+
+    .WebviewWidthController {
+      padding: 16px 0 12px;
+      border-bottom: 1px solid #d4d4d4;
+      margin-bottom: 28px;
+    }
+
+    .WebviewWidthController__input {
+      width: 100%;
+      margin-bottom: 12px;
+      outline: none;
+      height: 28px;
+      font-size: 13px;
+      padding: 0 8px;
+      border-radius: 3px;
+      background-color: #fdfdfd;
+      border: 1px solid #dfdfdf;
+      box-shadow: 0 3px 3px -2px rgba(0, 0, 0, 0.05);
     }
 
   </style>
@@ -451,6 +481,17 @@
       Draw
     </span>
   </button>
+  <div class="WebviewWidthController">
+    <h3>Webview Width</h3>
+    <input
+      class="WebviewWidthController__input"
+      type="number"
+      placeholder="auto"
+      onblur="handleBlur(event);"
+      onkeydown="if (event.key === 'Enter') handleBlur(event);"
+    >
+  </div>
+  <h3>Font Replacer</h3>
   <ul class="Option"></ul>
 </div>
 
@@ -458,7 +499,6 @@
   <webview
     src="https://kimdal-hyeong.github.io/html-to-sketch-electron/download-analyst/?utm_source=in-app"
     class="Content__webview"
-    style="width: 100%; height: 100%;"
     preload="./webviewScript/preload.js"
   ></webview>
   <div class="Content__size-view"></div>
