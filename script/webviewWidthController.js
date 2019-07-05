@@ -4,7 +4,7 @@ const {showSizeView} = require('./handleSizeView');
 function handleBlur(e) {
   const width = e.target.value;
 
-  console.log(width);
+  localStorage.setItem('webviewWidth', width);
 
   if (width === '') {
     content.style.width = '100%';
@@ -14,7 +14,6 @@ function handleBlur(e) {
 
   content.style.width = parseInt(width) + 255 + 'px';
   webview.style.width = width + 'px';
-  localStorage.setItem('webviewWidth', width);
 
   setTimeout(showSizeView, 10);
 }
