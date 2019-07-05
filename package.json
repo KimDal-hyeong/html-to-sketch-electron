@@ -1,7 +1,7 @@
 {
   "name": "html-to-sektch-electron",
   "main": "main.js",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "scripts": {
     "start": "yarn skpm-build && webpack --config ./webviewScript/webpack.config.js && gulp start",
     "start:dev": "yarn skpm-build && webpack --config ./webviewScript/webpack.config.js && NODE_ENV=dev gulp start",
