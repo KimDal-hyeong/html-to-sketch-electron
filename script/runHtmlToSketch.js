@@ -1,24 +1,10 @@
-const {webview, alert, alertFailTitle, alertFailText} = require('./getElements');
+const {webview, alert} = require('./getElements');
 const runPlugin = require('./runPlugin');
+const {doneAlert, failAlert} = require('./alert');
 const {replaceFont} = require('./fontReplacer');
 
 const ERROR_KEY_MESSAGE_NOT_FOUND_CURRENT_PAGE = 'null is not an object (evaluating \'document.currentPage\')';
 const ERROR_KEY_MESSAGE_NOT_FOUND_SKETCH_APP = 'Looks like we can\'t find Sketch.app.';
-
-function doneAlert() {
-  alert.classList.remove('Alert--loading');
-  alert.classList.add('Alert--done');
-  setTimeout(function () {
-    alert.classList.remove('Alert--done');
-  }, 2000);
-}
-
-function failAlert(title, message) {
-  alert.classList.remove('Alert--loading');
-  alert.classList.add('Alert--fail');
-  alertFailTitle.innerHTML = title;
-  alertFailText.innerHTML = message;
-}
 
 function runHtmlToSketch() {
   alert.classList.add('Alert--loading');

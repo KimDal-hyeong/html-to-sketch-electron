@@ -484,15 +484,6 @@
 <script src="script/index.js"></script>
 
 <script>
-  const {alert, alertFailTitle, alertFailText} = require('./script/getElements');
-  function closeFailAlert() {
-    alert.classList.remove('Alert--fail');
-    alertFailText.innerHTML = '';
-    alertFailTitle.innerHTML = '';
-  }
-</script>
-
-<script>
   if(process.env.NODE_ENV === 'dev') {
     const webview = document.getElementsByClassName('Content__webview')[0];
     webview.addEventListener("dom-ready", () => {webview.openDevTools();});

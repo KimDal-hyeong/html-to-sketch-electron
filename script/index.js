@@ -6,6 +6,7 @@ const {findFont} = require('./script/fontReplacer');
 const {startPicker, stopPicker} = require('./script/handlePicker');
 const runHtmlToSketch = require('./script/runHtmlToSketch');
 const {showSizeView} = require('./script/handleSizeView');
+const {closeFailAlert, failAlert} = require('./script/alert');
 
 title.innerText = title.innerText + ' v' + appVersion;
 
