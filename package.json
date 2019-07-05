@@ -3,9 +3,14 @@
   "main": "main.js",
   "version": "1.4.3",
   "scripts": {
-    "start": "webpack --config ./webviewScript/webpack.config.js && gulp start",
-    "start:dev": "webpack --config ./webviewScript/webpack.config.js && NODE_ENV=dev gulp start",
-    "build": "webpack --config ./webviewScript/webpack.config.js && NODE_ENV=build node electronPackager"
+    "start": "yarn skpm-build && webpack --config ./webviewScript/webpack.config.js && gulp start",
+    "start:dev": "yarn skpm-build && webpack --config ./webviewScript/webpack.config.js && NODE_ENV=dev gulp start",
+    "build": "yarn skpm-build && webpack --config ./webviewScript/webpack.config.js && NODE_ENV=build node electronPackager"
+  },
+  "skpm": {
+    "name": "asketch2sketch",
+    "manifest": "plugin/manifest.json",
+    "main": "plugin/asketch2sketch.sketchplugin"
   },
   "devDependencies": {
     "electron": "^2.0.8",
@@ -15,7 +20,7 @@
   },
   "dependencies": {
     "@brainly/html-sketchapp": "4.1.0",
-    "@skpm/builder": "^0.4.3",
+    "@skpm/builder": "^0.7.0",
     "babel-preset-airbnb": "^2.6.0",
     "compare-versions": "^3.1.0",
     "font-manager": "^0.3.0",
