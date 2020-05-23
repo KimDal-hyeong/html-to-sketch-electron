@@ -1,7 +1,7 @@
 {
   "name": "html-to-sektch-electron",
   "main": "main.js",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "scripts": {
     "start": "yarn skpm-build && webpack --config ./webviewScript/webpack.config.js && gulp start",
     "start:dev": "yarn skpm-build && webpack --config ./webviewScript/webpack.config.js && NODE_ENV=dev gulp start",
@@ -19,7 +19,7 @@
     "gulp": "^3.9.1"
   },
   "dependencies": {
-    "@brainly/html-sketchapp": "4.1.0",
+    "@brainly/html-sketchapp": "git://github.com/html-sketchapp/html-sketchapp.git#9642edb0ce",
     "@skpm/builder": "^0.7.0",
     "babel-preset-airbnb": "^2.6.0",
     "compare-versions": "^3.1.0",
