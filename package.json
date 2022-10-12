@@ -15,7 +15,7 @@
   "devDependencies": {
     "electron": "^2.0.8",
     "electron-connect": "^0.6.3",
-    "electron-packager": "^12.1.0",
+    "electron-packager": "^16.0.0",
     "gulp": "^3.9.1"
   },
   "dependencies": {
