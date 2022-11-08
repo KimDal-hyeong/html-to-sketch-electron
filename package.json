@@ -16,7 +16,7 @@
     "electron": "^2.0.8",
     "electron-connect": "^0.6.3",
     "electron-packager": "^12.1.0",
-    "gulp": "^3.9.1"
+    "gulp": "^4.0.2"
   },
   "dependencies": {
     "@brainly/html-sketchapp": "git://github.com/html-sketchapp/html-sketchapp.git#9642edb0ce",
